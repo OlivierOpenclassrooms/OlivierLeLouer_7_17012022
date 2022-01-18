@@ -3,6 +3,10 @@ const cors = require("cors");
 
 const app = express();
 
+const path = require('path');
+
+const userRoutes = require('./routes/user');
+
 const corsOptions = {
   origin: "http://localhost:8081"
 };
@@ -39,5 +43,9 @@ app.get("/", (req, res) => {
 });
 
 require("./routes/tutorial")(app);
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use('/api/auth', userRoutes);
 
 module.exports = app;

@@ -1,3 +1,7 @@
+const db = require("../models");
+const Tutorial = db.tutorials;
+const Op = db.Sequelize.Op;
+
 exports.create = (req, res) => {
     // Validate request
     if (!req.body.title) {
@@ -112,6 +116,7 @@ exports.create = (req, res) => {
   };
 
   exports.deleteAll = (req, res) => {
+    
     Tutorial.destroy({
       where: {},
       truncate: false

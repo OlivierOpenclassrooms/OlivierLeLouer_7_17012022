@@ -9,19 +9,23 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true
       },
-      nom: {
+      password: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      prénom: {
+      nom: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
+      },
+      prenom: {
+        type: Sequelize.STRING,
+        allowNull: true
       },
       poste: {
         type: Sequelize.STRING,
         allowNull: true
       },
-      photo: {
+      imageUrl: {
         type: Sequelize.STRING,
         allowNull: true
       },
