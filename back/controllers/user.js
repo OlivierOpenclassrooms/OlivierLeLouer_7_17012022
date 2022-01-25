@@ -1,9 +1,8 @@
 const db = require("../models");
 const User = db.users;
-const Op = db.Sequelize.Op;
 
 const bcrypt = require('bcrypt');
-
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 exports.signup = (req, res) => {
@@ -16,6 +15,7 @@ exports.signup = (req, res) => {
             nom: req.body.nom,
             prenom: req.body.prenom,
             poste: req.body.poste,
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         };
         User.create(user)
         .then(data => {
@@ -26,7 +26,7 @@ exports.signup = (req, res) => {
     .catch(error => res.status(500).json({ error }));
 };
 
-exports.login = (req,res) => {
+exports.login = (req, res) => {
     const email = req.body.email;
 
     User.findOne({  where: { email: email } })
@@ -65,22 +65,46 @@ exports.getOneUser = (req, res) => {
         .catch(error => res.status(404).json({ error }));
 };
 
-exports.deleteUser = (req, res) => {
-    const id = req.params.id;
+exports.modifyUser = (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    //Décode le token
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    //Extrait l'id utilisateur et compare à celui extrait du token
+    const userId = decodedToken.userId;
 
-    User.destroy( { where: { id: id } } )
-        .then(() => res.status(200).json({ message: 'Utilisateur supprimé !'}))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.updateUser = (req, res) => {
     const id = req.params.id;
 
     User.findByPk(id)
-        .then(() => {
-            User.update(req.body, { where: { id: id } } )
-                .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
-                .catch(() => res.status(400).json({ error }));
+        .then(user => {
+            if (user.userId == userId) {
+                User.update(req.body, { where: { id: id } } )
+                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
+                    .catch(() => res.status(400).json({ error }));
+            } else {
+                res.status(401).json({ message: 'Opération non autorisée' })
+            }
+        })
+        .catch(() => res.status(500).json({ error }));
+};
+
+exports.deleteUser = (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    //Décode le token
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    //Extrait l'id utilisateur et compare à celui extrait du token
+    const userId = decodedToken.userId;
+
+    const id = req.params.id;
+
+    User.findByPk(id)
+        .then(user => {
+            if (user.userId == userId) {
+                User.destroy(req.body, { where: { id: id } } )
+                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
+                    .catch(() => res.status(400).json({ error }));
+            } else {
+                res.status(401).json({ message: 'Opération non autorisée' })
+            }
         })
         .catch(() => res.status(500).json({ error }));
 };

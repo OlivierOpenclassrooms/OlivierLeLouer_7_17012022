@@ -6,6 +6,8 @@ const app = express();
 const path = require('path');
 
 const userRoutes = require('./routes/user');
+const topicRoutes = require('./routes/topic');
+const commentRoutes= require('./routes/comment');
 
 const corsOptions = {
   origin: "http://localhost:8081"
@@ -47,5 +49,7 @@ require("./routes/tutorial")(app);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/auth', userRoutes);
+app.use('/api/topic', topicRoutes);
+app.use('/api/comment', commentRoutes);
 
 module.exports = app;

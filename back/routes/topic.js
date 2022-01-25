@@ -4,11 +4,13 @@ const router = express.Router();
 
 const topicCtrl = require('../controllers/topic');
 
+const auth = require('../middleware/auth');
+const multer = require('../middleware/multer');
+
 router.get('/', topicCtrl.getAllTopics);
 router.get('/:id', topicCtrl.getOneTopic);
-router.post('/', topicCtrl.createTopic);
+router.post('/', multer, topicCtrl.createTopic);
 router.delete('/:id', topicCtrl.deleteTopic);
-router.put('/:id', topicCtrl.modifyTopic);
-
+router.put('/:id', multer, topicCtrl.modifyTopic);
 
 module.exports= router;
