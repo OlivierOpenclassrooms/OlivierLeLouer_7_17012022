@@ -10,7 +10,7 @@ const topicRoutes = require('./routes/topic');
 const commentRoutes= require('./routes/comment');
 
 const corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8080"
 };
 
 app.use(cors(corsOptions));
