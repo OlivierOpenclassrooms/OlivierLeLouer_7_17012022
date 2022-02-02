@@ -43,12 +43,20 @@ export default {
         switchToLogin() {
             this.mode ='login'
         },
+        saveUserInLocalStorage(response) {
+            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+            if (userInLocalStorage === null) {
+                userInLocalStorage = [];
+                userInLocalStorage.push(response);
+                localStorage.setItem('user', JSON.stringify(userInLocalStorage));
+            }
+        },
         login () {
             axios.post("http://localhost:3000/api/auth/login", {
                 email: this.dataLogin.email,
                 password: this.dataLogin.password
             })
-            .then(response => { console.log(response), this.$router.push('Topic'); })
+            .then(response => { this.saveUserInLocalStorage(response.data), console.log(response), this.$router.push('Topic') })
             .catch(error => { console.log(error, error.response), alert("Mauvais identifiant ou mot de passe") })
         },
         signUp() {
@@ -59,6 +67,7 @@ export default {
                 password: this.dataLogin.password,
             })
             .then(response => {
+                this.saveUserInLocalStorage(response.data),
                 console.log(response),
                 this.$router.push('Topic');
             })

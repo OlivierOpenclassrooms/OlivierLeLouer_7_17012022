@@ -3,8 +3,6 @@
         <div class="nav">
             <img src="../assets/icon-left-font.svg">
             <div>
-                <router-link to="/">Login</router-link> |
-                <router-link to="/signup">S'inscrire</router-link> |
                 <router-link to="/user">Mon compte</router-link>
             </div>
         </div>
@@ -12,9 +10,11 @@
 </template>
 
 <script>
-    export default {
-        name: "Header"
-    }
+export default {
+    name: "Header",
+
+
+}
 </script>
 
 <style scoped lang="scss">

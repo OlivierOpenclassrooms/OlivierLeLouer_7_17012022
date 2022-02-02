@@ -78,7 +78,7 @@ exports.modifyUser = (req, res) => {
 
     User.findByPk(id)
         .then(user => {
-            if (user.userId == userId) {
+            if (user.id == userId) {
                 User.update(req.body, { where: { id: id } } )
                     .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
                     .catch(() => res.status(400).json({ error }));
@@ -100,13 +100,13 @@ exports.deleteUser = (req, res) => {
 
     User.findByPk(id)
         .then(user => {
-            if (user.userId == userId) {
-                User.destroy(req.body, { where: { id: id } } )
-                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
-                    .catch(() => res.status(400).json({ error }));
+            if (user.id == userId) {
+                User.destroy( { where: { id: id } } )
+                    .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
+                    .catch((error) => res.status(400).json({ error }));
             } else {
                 res.status(401).json({ message: 'Opération non autorisée' })
             }
         })
-        .catch(() => res.status(500).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
 };
