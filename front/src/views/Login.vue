@@ -1,15 +1,21 @@
 <template>
     <main>
-        <div>
-            <label>Email</label>
-            <input type="email" v-model="dataLogin.email" required/>
+        <div class='card'>
+            <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
+            <h1 class='card__title' v-else>Inscription</h1>
+            <div class= 'form'>
+                <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
+                <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
+            </div>
+            <div class= 'form' v-if='mode== "signUp"'>
+                <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
+                <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
+            </div>
+            <button @click.prevent="login" v-if="mode == 'login'">S'identifier</button>
+            <button @click.prevent="signUp" v-else>S'inscrire</button>
+            <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
+            <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
         </div>
-        <div>
-            <label>Mot de passe</label>
-            <input type="password" v-model="dataLogin.password" required/>
-        </div>
-        <button @click.prevent="Login">Se connecter</button>
-        <router-link to="/signup">S'inscrire</router-link>
         <router-view/>
     </main>
 </template>
@@ -23,21 +29,90 @@ export default {
         return {
             dataLogin: {
                 email: null,
+                nom: null,
+                prenom: null,
                 password: null
-            }
+            },
+            mode: 'login'
         }
     },
     methods: {
-        Login () {
+        switchToSignUp() {
+            this.mode ='signUp'
+        },
+        switchToLogin() {
+            this.mode ='login'
+        },
+        login () {
             axios.post("http://localhost:3000/api/auth/login", {
                 email: this.dataLogin.email,
                 password: this.dataLogin.password
             })
-            .then(response => {
-            console.log(response)
+            .then(response => { console.log(response), this.$router.push('Topic'); })
+            .catch(error => { console.log(error, error.response), alert("Mauvais identifiant ou mot de passe") })
+        },
+        signUp() {
+            axios.post("http://localhost:3000/api/auth/signup", {
+                email: this.dataLogin.email,
+                prenom: this.dataLogin.prenom,
+                nom: this.dataLogin.nom,
+                password: this.dataLogin.password,
             })
-            .catch(error => {console.log(error, error.response), alert("Mauvais identifiant ou mot de passe")})
-        }
+            .then(response => {
+                console.log(response),
+                this.$router.push('Topic');
+            })
+            .catch(error => { console.log(error, error.response) })
+      }
     }
 }
 </script>
+
+<style lang="scss">
+
+.card {
+    background-color: #87a9bd;
+    max-width: 40%;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    margin: auto;
+    h1 {
+        color: rgba(255, 0, 0, 0.829);
+    }
+    button {
+        height: 40px;
+        background-color: rgba(255, 0, 0, 0.829);
+        border: none;
+        color: white;
+        font-weight: bolder;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 20px;
+        &:hover {
+            filter: brightness(1.75);
+            transition-duration: 700ms;
+        }
+    }
+    .form {
+        display: flex;
+        flex-direction: column;
+        input {
+            height: 40px;
+            margin-bottom: 15px;
+            border-radius: 20px;
+            border: none;
+        }
+    }
+    &__action {
+        cursor: pointer;
+        text-decoration: underline;
+        color: rgba(255, 0, 0, 0.829);
+        font-weight: bolder;
+        &:active {
+            color: white;
+        }
+    }
+}
+</style>

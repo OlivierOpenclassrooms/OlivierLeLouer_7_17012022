@@ -1,22 +1,15 @@
 <template>
-    <div class="about">
-      <label>email</label>
-      <input type="email" v-model="dataSignup.email" required />
-    </div>
-    <div class="about">
-      <label>prenom</label>
-      <input type="text" v-model="dataSignup.prenom" required />
-    </div>
-    <div class="about">
-      <label>nom</label>
-      <input type="text" v-model="dataSignup.nom" required />
-    </div>
-    <div class="about">
-      <label>password</label>
-      <input type="password" v-model="dataSignup.password" required />
-    </div>
+  <main>
+    <div class="signup">
+      <input type="email" v-model="dataSignup.email" placeholder="Email" required />
+      <input type="text" v-model="dataSignup.prenom" placeholder="Prénom" required />
+      <input type="text" v-model="dataSignup.nom" placeholder="Nom" required />
+      <input type="password" v-model="dataSignup.password" placeholder="Mot de passe" required />
+      <input type="file" name="image" @change="previewFile" />
      <button @click.prevent="signUp" type="submit">S'inscrire</button>
+    </div>
      <router-view/>
+  </main>
 </template>
 
 <script>
@@ -35,6 +28,10 @@ export default {
     }
   }, 
   methods: {
+        previewFile(event) {
+          console.log(event.target.files);
+        },
+
         signUp() {
         axios.post("http://localhost:3000/api/auth/signup", {
           email: this.dataSignup.email,
@@ -42,10 +39,8 @@ export default {
           nom: this.dataSignup.nom,
           password: this.dataSignup.password,
         })
-          .then(response => {
-            console.log(response)
-          })
-          .catch(error => {console.log(error, error.response)})
+          .then(response => { console.log(response) })
+          .catch(error => { console.log(error, error.response) })
       }
   }
 }

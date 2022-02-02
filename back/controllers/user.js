@@ -15,8 +15,10 @@ exports.signup = (req, res) => {
             nom: req.body.nom,
             prenom: req.body.prenom,
             poste: req.body.poste,
-            
         };
+        if(req.file) {
+        user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        }
         User.create(user)
         .then(data => {
             res.send(data);

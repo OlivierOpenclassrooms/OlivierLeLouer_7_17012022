@@ -15,11 +15,11 @@ module.exports = (sequelize, Sequelize) => {
       },
       nom: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: false
       },
       prenom: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: false
       },
       poste: {
         type: Sequelize.STRING,
