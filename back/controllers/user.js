@@ -16,13 +16,10 @@ exports.signup = (req, res) => {
             prenom: req.body.prenom,
             poste: req.body.poste,
         };
-        if(req.file) {
-        user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        }
         User.create(user)
-        .then(data => {
-            res.send(data);
-          })
+            .then(data => {
+                res.send(data);
+            })
             .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ error }));
@@ -79,14 +76,29 @@ exports.modifyUser = (req, res) => {
     User.findByPk(id)
         .then(user => {
             if (user.id == userId) {
-                User.update(req.body, { where: { id: id } } )
-                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
-                    .catch(() => res.status(400).json({ error }));
+                    bcrypt.hash(req.body.password, 10)
+                    .then(hash => {
+                        const user = {
+                            email: req.body.email,
+                            password: hash,
+                            biographie: req.body.biographie,
+                            nom: req.body.nom,
+                            prenom: req.body.prenom,
+                            poste: req.body.poste,
+                        };
+                        if (req.file) {
+                            user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                        }
+                        User.update(user, { where: { id: id } } )
+                            .then(() => res.status(200).json({ message: 'Utilisateur modifié!' }))
+                            .catch((error) => res.status(400).json({ error } ));
+                    })
+                    .catch(error => res.status(500).json({ error }));
             } else {
-                res.status(401).json({ message: 'Opération non autorisée' })
+                res.status(401).json({ message: 'Opération non autorisée' } )
             }
         })
-        .catch(() => res.status(500).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
 };
 
 exports.deleteUser = (req, res) => {

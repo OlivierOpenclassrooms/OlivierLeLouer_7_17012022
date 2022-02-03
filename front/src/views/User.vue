@@ -1,7 +1,7 @@
 <template>
   <main>
     <div>
-      <button @click="deleteAccount">Supprimer mon compte</button>
+      <button @click="deleteUser">Supprimer mon compte</button>
     </div>
     <router-link to="/edituser">Modifier son profil</router-link>
   </main>
@@ -22,7 +22,7 @@ export default {
     }
   },
   methods: {
-    deleteAccount() {
+    deleteUser() {
       axios.delete(`http://localhost:3000/api/auth/${userId}`, {
         headers: {
             Authorization: "Bearer " + userToken
