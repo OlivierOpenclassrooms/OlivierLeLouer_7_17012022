@@ -4,6 +4,7 @@
             <img src="../assets/icon-left-font.svg">
             <div>
                 <router-link to="/user">Mon compte</router-link>
+                <button @click="deconnectUser">Deconnexion</button>
             </div>
         </div>
   </header>
@@ -13,7 +14,12 @@
 export default {
     name: "Header",
 
-
+    methods : {
+        deconnectUser() {
+            localStorage.clear();
+            this.$router.push('/');
+        }
+    }
 }
 </script>
 

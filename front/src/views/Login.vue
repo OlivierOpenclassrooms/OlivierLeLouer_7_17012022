@@ -36,6 +36,12 @@ export default {
             mode: 'login'
         }
     },
+    mounted() {
+        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+        if (userInLocalStorage != null) {
+            this.$router.push('/topic');
+        }
+    },
     methods: {
         switchToSignUp() {
             this.mode ='signUp'
@@ -46,6 +52,11 @@ export default {
         saveUserInLocalStorage(response) {
             let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
             if (userInLocalStorage === null) {
+                userInLocalStorage = [];
+                userInLocalStorage.push(response);
+                localStorage.setItem('user', JSON.stringify(userInLocalStorage));
+            } else {
+                localStorage.clear();
                 userInLocalStorage = [];
                 userInLocalStorage.push(response);
                 localStorage.setItem('user', JSON.stringify(userInLocalStorage));

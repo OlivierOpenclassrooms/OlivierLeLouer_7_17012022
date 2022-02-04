@@ -11,14 +11,22 @@ exports.signup = (req, res) => {
         const user = {
             email: req.body.email,
             password: hash,
-            biographie: req.body.biographie,
             nom: req.body.nom,
             prenom: req.body.prenom,
-            poste: req.body.poste,
         };
         User.create(user)
-            .then(data => {
-                res.send(data);
+            .then(user => {
+                res.status(200).json({
+                    userId: user.id,
+                    //Encode un nouveau token
+                    token: jwt.sign(
+                        { userId: user.id },
+                        //Utilisation d'une chaîne de caractère temporaire
+                        'RANDOM_TOKEN_SECRET',
+                        //Durée de validité et demande de reconnection au bout de 24h
+                        { expiresIn: '24h' }
+                    )
+                });
             })
             .catch(error => res.status(400).json({ error }));
     })
@@ -75,22 +83,39 @@ exports.modifyUser = (req, res) => {
 
     User.findByPk(id)
         .then(user => {
+            if (user.id == userId && !req.body.password) {
+                if (req.file) {
+                    user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                }
+                User.update(req.body, { where: { id: id } } )
+                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!' }))
+                    .catch((error) => res.status(400).json({ error } ));
+            } else {
+                res.status(401).json({ message: 'Opération non autorisée' } )
+            }
+        })
+        .catch((error) => res.status(500).json({ error }));
+};
+
+exports.modifyUserPassword = (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    //Décode le token
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    //Extrait l'id utilisateur et compare à celui extrait du token
+    const userId = decodedToken.userId;
+
+    const id = req.params.id;
+
+    User.findByPk(id)
+        .then(user => {
             if (user.id == userId) {
                     bcrypt.hash(req.body.password, 10)
                     .then(hash => {
                         const user = {
-                            email: req.body.email,
                             password: hash,
-                            biographie: req.body.biographie,
-                            nom: req.body.nom,
-                            prenom: req.body.prenom,
-                            poste: req.body.poste,
                         };
-                        if (req.file) {
-                            user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-                        }
                         User.update(user, { where: { id: id } } )
-                            .then(() => res.status(200).json({ message: 'Utilisateur modifié!' }))
+                            .then(() => res.status(200).json({ message: 'Mot de passe modifié!' }))
                             .catch((error) => res.status(400).json({ error } ));
                     })
                     .catch(error => res.status(500).json({ error }));

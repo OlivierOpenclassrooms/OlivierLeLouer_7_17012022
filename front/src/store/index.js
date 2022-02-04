@@ -3,16 +3,20 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
+    user: {
+      userId: '',
+      token: '',
+    },
     userInfos: {
       nom: '',
       prenom: '',
       email: '',
-      token: '',
-      isAdmin: false,
-    },
+      biographie: '',
+      photo: '',
+    }
   },
   mutations: {
-    
+
   },
   actions: {
     

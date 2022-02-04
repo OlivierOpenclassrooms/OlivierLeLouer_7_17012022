@@ -18,8 +18,12 @@ export default {
   name: "User",
   data() {
     return {
-      
     }
+  },
+  mounted() {
+        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+        if (userInLocalStorage == null)
+          this.$router.push('/')
   },
   methods: {
     deleteUser() {
