@@ -1,5 +1,6 @@
 <template>
   <main>
+    <p>{{ user.nom }}</p>
     <div>
         <input type="email" v-model="dataEdit.email" placeholder="Email" />
         <input type="text" v-model="dataEdit.prenom" placeholder="Prénom" />
@@ -9,18 +10,17 @@
         <input type="password" v-model="changePassword.password" placeholder="Mot de passe" />
         <input type="file" placeholder="Met ta plus belle photo ici"/>
         <button @click="editUser">Modifier</button>
-        <button @click="editPassword">Modifier le mot de passe</button>
     </div>
   </main>
 </template>
 
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 let userId = userInLocalStorage.map(user => user.userId || user.id);
 let userToken = userInLocalStorage.map(user => user.token);
-
 
 export default {
   name: "EditUser",
@@ -32,6 +32,7 @@ export default {
         biographie: null,
         poste: null,
         prenom: null,
+        password: null,
       },
       changePassword : {
         password: null,
@@ -39,9 +40,14 @@ export default {
     }
   },
   mounted() {
-        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-        if (userInLocalStorage == null)
-          this.$router.push('/')
+    let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+    if (userInLocalStorage == null) {
+      this.$router.push('/')
+    }
+    this.$store.dispatch('getUserInfos');
+  },
+  computed: {
+    ...mapState({user: 'userInfos'})
   },
   methods: {
     editUser() {
@@ -51,7 +57,6 @@ export default {
           delete copy[key]
         }
       }
-
       axios.put(`http://localhost:3000/api/auth/${userId}`, {
         ...copy
       }, { headers: {
@@ -62,17 +67,6 @@ export default {
        )
       .catch(error => { console.log(error) })
     },
-    editPassword() {
-      axios.put(`http://localhost:3000/api/auth/password/${userId}`, {
-        password: this.changePassword.password,
-      }, { headers: {
-          Authorization: "Bearer " + userToken
-        }
-      })
-      .then(response => { console.log(response) }
-       )
-      .catch(error => { console.log(error) })
-    }
   },
 };
 </script>

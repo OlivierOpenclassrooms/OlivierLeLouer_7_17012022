@@ -1,10 +1,7 @@
 <template>
     <main>
-        <div class="tamere" v-for="item in $store.state.topicInfos" :key="item">
-                <p>{{ item.title }}</p>
-                <p>{{ item.description }}</p>
-                <p class="idd">{{ item.id }}</p>
-                <button class="button1" @click="deleteTopic" v-bind:topicId="item.id">Supprimer</button>
+        <div>
+            HELLO
         </div>
         <input type='text' v-model="dataTopic.title" placeholder="Titre"/>
         <input type='text' v-model="dataTopic.description" placeholder="Description"/>
@@ -13,7 +10,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
@@ -28,15 +25,11 @@ export default {
                 description: null,
                 image: null,
                 userId: userId[0],
-            },
+            }
         }
     },
-    mounted() {
-        this.$store.dispatch('getAllTopics');
-    },
     computed: {
-        ...mapState({user: 'userInfos'}),
-        ...mapState({topic: 'topicInfos'}),
+        ...mapState({user: 'userInfos'})
     },
     methods: {
         createTopic() {
@@ -47,22 +40,7 @@ export default {
             })
             .then( response => { console.log(response)})
             .catch(error => {console.log(error)})
-        },
-        deleteTopic() {
-            let buttons = document.querySelectorAll('.button1');
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-                    let topicId = e.target.getAttribute("topicId");
-                    axios.delete(`http://localhost:3000/api/topic/${topicId}`)
-                    .then((response) => {
-                        console.log(response)
-                        })
-                    .catch(error => console.log(error));
-                })
-            }
         }
     },
 }
-
-
 </script>

@@ -4,7 +4,7 @@ const Op = db.Sequelize.Op;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
-exports.createComment = (req, res, next) => {
+exports.createComment = (req, res) => {
     const comment = {
         userId: req.body.userId,
         topicId: req.body.topicId,
@@ -15,7 +15,7 @@ exports.createComment = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 };
 
-exports.getOneComment = (req, res, next) => {
+exports.getOneComment = (req, res) => {
     const id = req.params.id;
   
     Comment.findByPk(id)
@@ -24,7 +24,7 @@ exports.getOneComment = (req, res, next) => {
 
 };
 
-exports.getAllComments = (req, res, next) => {
+exports.getAllComments = (req, res) => {
     const content = req.query.content;
     const condition = content ? { content: { [Op.like]: `%${content}%` } } : null;
   
@@ -38,7 +38,7 @@ exports.getAllComments = (req, res, next) => {
       });
   };
 
-exports.modifyComment = (req, res, next) => {
+exports.modifyComment = (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     //Décode le token
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
@@ -60,7 +60,7 @@ exports.modifyComment = (req, res, next) => {
         .catch(() => res.status(500).json({ error }));
 };
 
-exports.deleteComment = (req, res, next) => {
+exports.deleteComment = (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     //Décode le token
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');

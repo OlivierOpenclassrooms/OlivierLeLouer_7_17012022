@@ -83,44 +83,37 @@ exports.modifyUser = (req, res) => {
 
     User.findByPk(id)
         .then(user => {
-            if (user.id == userId && !req.body.password) {
+            if (user.id == userId) {
+                if (!req.body.password) {
                 if (req.file) {
                     user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
                 }
                 User.update(req.body, { where: { id: id } } )
                     .then(() => res.status(200).json({ message: 'Utilisateur modifié!' }))
                     .catch((error) => res.status(400).json({ error } ));
-            } else {
-                res.status(401).json({ message: 'Opération non autorisée' } )
-            }
-        })
-        .catch((error) => res.status(500).json({ error }));
-};
-
-exports.modifyUserPassword = (req, res) => {
-    const token = req.headers.authorization.split(' ')[1];
-    //Décode le token
-    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-    //Extrait l'id utilisateur et compare à celui extrait du token
-    const userId = decodedToken.userId;
-
-    const id = req.params.id;
-
-    User.findByPk(id)
-        .then(user => {
-            if (user.id == userId) {
+                } else {
                     bcrypt.hash(req.body.password, 10)
                     .then(hash => {
                         const user = {
+                            email: req.body.email,
                             password: hash,
+                            nom: req.body.nom,
+                            prenom: req.body.prenom,
+                            poste: req.body.poste,
+                            biographie: req.body.biographie,
                         };
+                        if (req.file) {
+                            user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                        }
                         User.update(user, { where: { id: id } } )
                             .then(() => res.status(200).json({ message: 'Mot de passe modifié!' }))
                             .catch((error) => res.status(400).json({ error } ));
                     })
                     .catch(error => res.status(500).json({ error }));
+                }
             } else {
                 res.status(401).json({ message: 'Opération non autorisée' } )
+            
             }
         })
         .catch((error) => res.status(500).json({ error }));

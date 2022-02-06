@@ -4,7 +4,7 @@ const Op = db.Sequelize.Op;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
-exports.createTopic = (req, res, next) => {
+exports.createTopic = (req, res) => {
     const topic = {
         userId: req.body.userId,
         title: req.body.title,
@@ -15,7 +15,7 @@ exports.createTopic = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 };
 
-exports.getOneTopic = (req, res, next) => {
+exports.getOneTopic = (req, res) => {
     const id = req.params.id;
   
     Topic.findByPk(id)
@@ -23,7 +23,7 @@ exports.getOneTopic = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 };
 
-exports.getAllTopics = (req, res, next) => {
+exports.getAllTopics = (req, res) => {
     const title = req.query.title;
     const condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
   
@@ -36,7 +36,7 @@ exports.getAllTopics = (req, res, next) => {
       });
   };
 
-exports.modifyTopic = (req, res, next) => {
+exports.modifyTopic = (req, res) => {
     const id = req.params.id;
 
     Topic.findByPk(id)
@@ -48,7 +48,7 @@ exports.modifyTopic = (req, res, next) => {
         .catch(() => res.status(500).json({ error }));
 };
 
-exports.deleteTopic = (req, res, next) => {
+exports.deleteTopic = (req, res) => {
     const id = req.params.id;
 
     Topic.destroy( { where: { id: id } } )
