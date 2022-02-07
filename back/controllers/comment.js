@@ -72,7 +72,7 @@ exports.deleteComment = (req, res) => {
     Comment.findByPk(id)
         .then(comment => {
             if (comment.userId == userId) {
-                Comment.destroy(req.body, { where: { id: id } } )
+                Comment.destroy( { where: { id: id } } )
                     .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
                     .catch(() => res.status(400).json({ error }));
             } else {

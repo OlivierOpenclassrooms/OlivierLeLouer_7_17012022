@@ -7,10 +7,10 @@ const topicCtrl = require('../controllers/topic');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer');
 
-router.get('/', topicCtrl.getAllTopics);
-router.get('/:id', topicCtrl.getOneTopic);
-router.post('/', multer, topicCtrl.createTopic);
-router.delete('/:id', topicCtrl.deleteTopic);
-router.put('/:id', multer, topicCtrl.modifyTopic);
+router.get('/', auth, topicCtrl.getAllTopics);
+router.get('/:id', auth, topicCtrl.getOneTopic);
+router.post('/', auth, multer, topicCtrl.createTopic);
+router.delete('/:id', auth, topicCtrl.deleteTopic);
+router.put('/:id', auth, multer, topicCtrl.modifyTopic);
 
 module.exports= router;

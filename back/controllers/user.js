@@ -140,3 +140,16 @@ exports.deleteUser = (req, res) => {
         })
         .catch((error) => res.status(500).json({ error }));
 };
+
+exports.getAllUsers = (req, res) => {
+    const email = req.query.email;
+    const condition = email ? { email: { [Op.like]: `%${email}%` } } : null;
+  
+    User.findAll({ where: condition })
+      .then(data => {res.send(data);
+    })
+      .catch(error => {
+        res.status(500).send({ error
+        });
+      });
+  };

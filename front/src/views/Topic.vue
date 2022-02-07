@@ -16,10 +16,10 @@ export default {
 
     mounted() {
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+        
         if (userInLocalStorage == null)
             this.$router.push('/')
     }
-
 }
 </script>
 

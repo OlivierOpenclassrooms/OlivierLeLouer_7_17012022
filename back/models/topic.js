@@ -10,12 +10,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       imageUrl: {
         type: Sequelize.STRING,
         allowNull: true
-      }
+      },
     });
   
     return Topic;

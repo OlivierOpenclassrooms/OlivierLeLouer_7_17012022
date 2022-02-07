@@ -25,6 +25,7 @@ import axios from "axios";
 
 export default {
     name: "Login",
+
     data () {
         return {
             dataLogin: {
@@ -36,12 +37,15 @@ export default {
             mode: 'login'
         }
     },
+
     mounted() {
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
         if (userInLocalStorage != null) {
             this.$router.push('/topic');
         }
     },
+    
     methods: {
         switchToSignUp() {
             this.mode ='signUp'
@@ -51,6 +55,7 @@ export default {
         },
         saveUserInLocalStorage(response) {
             let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
             if (userInLocalStorage === null) {
                 userInLocalStorage = [];
                 userInLocalStorage.push(response);
