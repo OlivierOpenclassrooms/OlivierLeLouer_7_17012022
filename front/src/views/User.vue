@@ -4,8 +4,7 @@
       <div class="container-user__card">
         <p v-if="user.image != null">{{ user.image }}</p>
         <div class="container-user__card__name">
-          <p>{{ user.nom }}</p>
-          <p>{{ user.prenom }}</p>
+          <p>{{ user.prenom }} {{ user.nom }}</p>
         </div>
       </div>
       <div class="container-user__card__bio">
@@ -29,13 +28,15 @@ export default {
   name: "User",
 
   mounted() {
-        this.$store.dispatch('getUserInfos')
+        this.$store.dispatch('getUserInfos');
+        this.$store.dispatch('getAllUsers');
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
         if (userInLocalStorage == null)
           this.$router.push('/')
   },
   computed: {
-    ...mapState({user: 'userInfos'})
+    ...mapState({user: 'userInfos'}),
+    ...mapState({allUsers: 'allUsersInfos'}),
   },
 }
 
@@ -59,9 +60,7 @@ export default {
       justify-content: space-between;
     }
     p {
-      flex-wrap: wrap;
       display: flex;
-      width: 45%;
     }
   }
   &__card__bio {
@@ -85,6 +84,7 @@ export default {
       justify-content: center;
       align-items: center;
       background-color: red;
+      border-radius: 10px;
       font-weight: bold;
       color: white;
       height: 50px;

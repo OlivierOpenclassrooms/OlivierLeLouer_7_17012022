@@ -3,13 +3,17 @@ import axios from 'axios';
 
 export default createStore({
   state: {
-    userInfos: {},
+    allUsersInfos: [],
+    userInfos: [],
     topicInfos: [],
     commentInfos: [],
   },
   mutations: {
     userInfos(state, userInfos) {
       state.userInfos = userInfos
+    },
+    allUsersInfos(state, allUsersInfos) {
+      state.allUsersInfos = allUsersInfos
     },
     topicInfos(state, topicInfos) {
       state.topicInfos = topicInfos
@@ -31,7 +35,7 @@ export default createStore({
             Authorization: "Bearer " + userToken
           }
         })
-      .then(response => { this.commit('userInfos', response.data) })
+      .then(response => { this.commit('userInfos', response.data), console.log(response.data) })
       .catch(error => console.log(error));
     },
     getAllTopics() {
@@ -72,7 +76,7 @@ export default createStore({
           Authorization: "Bearer " + userToken
         }
       })
-        .then(response => { this.commit('userInfos', response.data), console.log(response.data) 
+        .then(response => { this.commit('allUsersInfos', response.data), console.log(response.data) 
         })
         .catch(error => { console.log(error)})
     },

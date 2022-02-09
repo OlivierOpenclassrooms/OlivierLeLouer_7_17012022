@@ -8,10 +8,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
       imageUrl: {
         type: Sequelize.STRING,
         allowNull: true

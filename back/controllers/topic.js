@@ -10,7 +10,6 @@ exports.createTopic = (req, res) => {
     const topic = {
         userId: req.body.userId,
         title: req.body.title,
-        description: req.body.description,
     };
     Topic.create(topic)
         .then(data => { res.send(data); })
