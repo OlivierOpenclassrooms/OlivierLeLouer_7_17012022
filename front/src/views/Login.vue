@@ -1,20 +1,25 @@
 <template>
     <main>
-        <div class='card'>
-            <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
-            <h1 class='card__title' v-else>Inscription</h1>
-            <div class= 'form'>
-                <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
-                <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
+        <div id='container'>
+            <div class='card-description'>
+                <p>image</p>
             </div>
-            <div class= 'form' v-if='mode== "signUp"'>
-                <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
-                <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
+            <div class='card'>
+                <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
+                <h1 class='card__title' v-else>Inscription</h1>
+                <div class= 'form'>
+                    <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
+                    <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
+                </div>
+                <div class= 'form' v-if='mode== "signUp"'>
+                    <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
+                    <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
+                </div>
+                <button @click.prevent="login" v-if="mode == 'login'">S'identifier</button>
+                <button @click.prevent="signUp" v-else>S'inscrire</button>
+                <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
+                <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
             </div>
-            <button @click.prevent="login" v-if="mode == 'login'">S'identifier</button>
-            <button @click.prevent="signUp" v-else>S'inscrire</button>
-            <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
-            <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
         </div>
         <router-view/>
     </main>
@@ -93,16 +98,27 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+
+#container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+}
 
 .card {
-    background-color: #87a9bd;
-    max-width: 40%;
+    background-color: rgb(226, 226, 226);
+    width: 40%;
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     padding: 30px;
     margin: auto;
+    margin-top: 10%;
+    position: absolute;
+    right: 0;
     h1 {
         color: rgba(255, 0, 0, 0.829);
     }
@@ -139,5 +155,14 @@ export default {
             color: white;
         }
     }
+}
+
+.card-description {
+    background-color: green;
+    width: 40%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
 }
 </style>

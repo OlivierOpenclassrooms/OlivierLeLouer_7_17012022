@@ -37,18 +37,14 @@ export default {
         }
     },
 
-    getUsersInfos() {
-
-    },
-
     mounted() {
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
         this.$store.dispatch('getAllComments');
         this.$store.dispatch('getAllUsers');
+        
         if (userInLocalStorage == null)
             this.$router.push('/')
     },
-
     methods: {
         createComment() {
             let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
@@ -128,3 +124,7 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+
+</style>

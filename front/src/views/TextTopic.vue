@@ -1,15 +1,22 @@
 <template>
     <main>
-        <div v-for="item in $store.state.topicInfos" :key="item">
-                <p>{{ item.title }}</p>
-                <p>{{ item.description }}</p>
-                <button class="button-delete" @click="deleteTopic" :topicId="item.id">Supprimer</button>
-                <button class="button-modify" @click="modifyTopic" :topicId="item.id">Modifier</button>
-                <button class="button-get" @click="getOneTopic" :topicId="item.id">ALLER ICI</button>
+        <div>
+            <h1>Discussions :</h1>
+            <input type='text' v-model="dataTopic.title" placeholder="Titre"/>
+            <input type='text' v-model="dataTopic.description" placeholder="Description"/>
+            <button @click="createTopic">Créer topic</button>
+            <div v-for="item in $store.state.topicInfos" :key="item">
+                    <p>{{ item.title }}</p>
+                    <p>{{ item.description }}</p>
+                    <div v-for="user in $store.state.userInfos" :key="user">
+                        <p v-if="item.userId == user.id">par {{ user.prenom }} {{ user.nom }}</p>
+                    </div>
+                    <p>créé le {{ item.createdAt }}</p>
+                    <button class="button-delete" @click="deleteTopic" :topicId="item.id">Supprimer</button>
+                    <button class="button-modify" @click="modifyTopic" :topicId="item.id">Modifier</button>
+                    <button class="button-get" @click="getOneTopic" :topicId="item.id">ALLER ICI</button>
+            </div>
         </div>
-        <input type='text' v-model="dataTopic.title" placeholder="Titre"/>
-        <input type='text' v-model="dataTopic.description" placeholder="Description"/>
-        <button @click="createTopic">Créer topic</button>
     </main>
 </template>
 
@@ -18,6 +25,7 @@ import axios from 'axios';
 import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+let userToken = userInLocalStorage.map(user => user.token);
 let userId = userInLocalStorage.map(user => user.userId);
 
 export default {
@@ -36,6 +44,8 @@ export default {
 
     mounted() {
         this.$store.dispatch('getAllTopics');
+        this.$store.dispatch('getAllUsers');
+        this.$store.dispatch('getAllComments');
     },
 
     computed: {
@@ -45,10 +55,6 @@ export default {
 
     methods: {
         createTopic() {
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-            let userToken = userInLocalStorage.map(user => user.token);
-
             axios.post('http://localhost:3000/api/topic', {
                 title: this.dataTopic.title,
                 description: this.dataTopic.description,
@@ -62,10 +68,6 @@ export default {
             .catch(error => {console.log(error)})
         },
         deleteTopic() {
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-            let userToken = userInLocalStorage.map(user => user.token);
-
             let buttons = document.querySelectorAll('.button-delete');
 
             for (let button of Array.from(buttons)) {
@@ -88,10 +90,6 @@ export default {
             }
         },
         modifyTopic(){
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-            let userToken = userInLocalStorage.map(user => user.token);
-
             const copy = Object.assign({}, this.dataEdit);
 
             for(const key in copy) {
@@ -121,10 +119,6 @@ export default {
             }
         },
         getOneTopic() {
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-            let userToken = userInLocalStorage.map(user => user.token);
-
             let buttons = document.querySelectorAll('.button-get');
 
             for (let button of Array.from(buttons)) {
@@ -145,3 +139,7 @@ export default {
     },
 }
 </script>
+
+<style lang="scss" scoped>
+
+</style>

@@ -1,8 +1,12 @@
 <template>
-    <div>
+    <div id="header">
       <Header/>
-      <router-view/>
     </div>
+    <main>
+      <div id="page-container">
+        <router-view/>
+      </div>
+    </main>
 </template>
 
 <script>
@@ -24,18 +28,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  margin: auto;
 }
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+#header {
+  width: 100%;
+  border-bottom: 3px solid rgb(233, 233, 233);
 }
+
+#page-container {
+  max-width: 1024px;
+  margin: auto;
+}
+
+
 </style>
