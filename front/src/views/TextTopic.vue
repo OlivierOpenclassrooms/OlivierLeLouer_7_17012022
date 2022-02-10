@@ -69,7 +69,7 @@ export default {
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then( response => { console.log(response)})
+            .then( response => { console.log(response), this.$router.go()})
             .catch(error => {console.log(error)})
         },
         deleteTopic() {
@@ -86,7 +86,7 @@ export default {
                         }
                     })
                     .then((response) => {
-                        console.log(response)
+                        console.log(response), this.$router.go()
                     })
                     .catch(error => 
                         console.log(error)
@@ -118,7 +118,7 @@ export default {
                         Authorization: "Bearer " + userToken
                         }
                     })
-                    .then((response) => { console.log(response) })
+                    .then((response) => { console.log(response), this.$router.go() })
                     .catch(error => console.log(error));
                 })
             }

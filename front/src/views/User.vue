@@ -1,8 +1,11 @@
 <template>
   <main>
     <div v-for="item in userInfos" :key="item">
-      <h1 v-if="user.id == this.$route.params.id">Mon Profil</h1>
-      <h1 v-else>Profil de {{ item.prenom }} {{ item.nom }}</h1>
+      <div class="card-title">
+        <h1 v-if="user.id == this.$route.params.id">Mon Profil</h1>
+        <h1 v-else>Profil de {{ item.prenom }} {{ item.nom }}</h1>
+        <p class= "card-title__button" v-if="this.$route.params.id == this.$store.state.userInfos.id" @click="this.$router.push('/editUser')">Modifier mon profil</p>
+      </div>
       <div class="container-user">
         <div class="container-user__card">
           <p v-if="item.image != null">{{ item.image }}</p>
@@ -32,9 +35,7 @@
           </div>
       </div>
     </div>
-    <div class="container-button" v-if="user.id == this.$route.params.id">
-        <p class= "container-button__button" @click="this.$router.push('/editUser')">Modifier mon profil</p>
-    </div>
+    <router-view/>
   </main>
 </template>
 
@@ -43,7 +44,6 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-let userToken = userInLocalStorage.map(user => user.token);
 
 export default {
   name: "User",
@@ -68,6 +68,8 @@ export default {
   },
   methods: {
     getOneTopic() {
+      let userToken = userInLocalStorage.map(user => user.token);
+      
       let buttons = document.querySelectorAll('.button-get');
 
       for (let button of Array.from(buttons)) {
@@ -84,13 +86,38 @@ export default {
               .catch(error => console.log(error));
           })
       }
-      },
+    },
   }
 }
 
 </script>
 
 <style lang="scss" scoped>
+.card-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: red;
+    border-radius: 10px;
+    font-weight: bold;
+    color: white;
+    height: 40px;
+    width:200px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 400ms;
+    &:hover {
+      cursor: pointer;
+      filter: brightness(1.07);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+      }
+
+  }
+}
 .container-user {
   display: flex;
   flex-direction: column;
@@ -98,7 +125,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     margin-bottom: 2%;
     &__name {
       display: flex;
@@ -113,7 +140,7 @@ export default {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     padding: 2%;
     margin-bottom: 2%;
     span {
@@ -122,34 +149,13 @@ export default {
     }
   }
 }
-.container-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    &__button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: red;
-      border-radius: 10px;
-      font-weight: bold;
-      color: white;
-      height: 50px;
-      width:230px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-      transition: all 400ms;
-      &:hover {
-        cursor: pointer;
-        filter: brightness(1.07);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
-    }
-  }
 
 .container-contributions {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  padding: 2%;
 }
 
 .card-infos {

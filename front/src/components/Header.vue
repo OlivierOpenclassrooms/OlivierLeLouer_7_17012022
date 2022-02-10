@@ -30,7 +30,7 @@
 <script>
 import axios from 'axios'
 
-let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
 
 
 
@@ -48,15 +48,24 @@ export default {
             this.$router.push('/');
         },
         getOneUser() {
-            let userId = userInLocalStorage.map(user => user.userId);
-            let userToken = userInLocalStorage.map(user => user.token);
-            axios.get(`http://localhost:3000/api/auth/${userId}`, { 
-                headers: {
-                Authorization: "Bearer " + userToken
-                } }
-            )
-            .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
-            .catch(error => console.log(error));
+            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+            if(userInLocalStorage != null) {
+
+                let userId = userInLocalStorage.map(user => user.userId);
+
+                let userToken = userInLocalStorage.map(user => user.token);
+
+                axios.get(`http://localhost:3000/api/auth/${userId}`, { 
+                    headers: {
+                    Authorization: "Bearer " + userToken
+                    } }
+                )
+                .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
+                .catch(error => console.log(error));
+            } else {
+                alert('il faut vous connecter')
+            }
         },
     }
 }
