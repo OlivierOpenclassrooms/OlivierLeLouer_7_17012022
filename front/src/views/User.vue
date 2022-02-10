@@ -1,35 +1,56 @@
 <template>
   <main>
-    <div class="container-user">
-      <div class="container-user__card">
-        <p v-if="user.image != null">{{ user.image }}</p>
-        <div class="container-user__card__name">
-          <p>{{ user.prenom }} {{ user.nom }}</p>
+    <div v-for="item in userInfos" :key="item">
+      <h1 v-if="user.id == this.$route.params.id">Mon Profil</h1>
+      <h1 v-else>Profil de {{ item.prenom }} {{ item.nom }}</h1>
+      <div class="container-user">
+        <div class="container-user__card">
+          <p v-if="item.image != null">{{ item.image }}</p>
+          <div class="container-user__card__name">
+            <p>{{ item.prenom }} {{ item.nom }}</p>
+          </div>
+        </div>
+        <div class="container-user__card__bio">
+          <h2>A propos</h2>
+          <h3>Poste</h3>
+          <p>{{ item.poste }}</p>
+          <h3>Biographie</h3>
+          <p>{{ item.biographie }}</p>
+          <span>Membre depuis le {{ item.createdAt }}</span>
         </div>
       </div>
-      <div class="container-user__card__bio">
-        <h3>Poste</h3>
-        <p>{{ user.poste }}</p>
-        <h3>Biographie</h3>
-        <p>{{ user.biographie }}</p>
-        <span>Membre depuis le {{ user.createdAt }}</span>
+    </div>
+    <div class="container-contributions">
+      <h2>Contributions</h2>
+      <div class="card-infos" v-for="i in topicInfos" :key="i">
+          <div class="card-infos__title">
+            <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="i.id">{{ i.title }}</p>
+          </div>
+          <div class="card-infos__title">
+              <p class="card-infos__title__date">créé le {{ i.createdAt }}</p>
+              <p class="card-infos__title__date" v-if="i.updatedAt != i.createdAt">Edité le {{ i.updatedAt }}</p>
+          </div>
       </div>
-      <div class="container-button">
+    </div>
+    <div class="container-button" v-if="user.id == this.$route.params.id">
         <p class= "container-button__button" @click="this.$router.push('/editUser')">Modifier mon profil</p>
-      </div>
     </div>
   </main>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import axios from 'axios';
+
+let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+let userToken = userInLocalStorage.map(user => user.token);
 
 export default {
   name: "User",
-
   mounted() {
         this.$store.dispatch('getUserInfos');
         this.$store.dispatch('getAllUsers');
+        this.$store.dispatch('getAllTopics');
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
         if (userInLocalStorage == null)
           this.$router.push('/')
@@ -37,17 +58,42 @@ export default {
   computed: {
     ...mapState({user: 'userInfos'}),
     ...mapState({allUsers: 'allUsersInfos'}),
+    ...mapState({topic: 'topicInfos'}),
+    userInfos() {
+      return this.$store.state.allUsersInfos.filter(item => item.id == this.$route.params.id)
+    },
+    topicInfos() {
+      return this.$store.state.topicInfos.filter(item => item.userId == this.$route.params.id)
+    },
   },
+  methods: {
+    getOneTopic() {
+      let buttons = document.querySelectorAll('.button-get');
+
+      for (let button of Array.from(buttons)) {
+          button.addEventListener("click", e => {
+
+              let topicId = e.target.getAttribute("topicId");
+
+              axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
+                  headers: {
+                  Authorization: "Bearer " + userToken
+                  } }
+              )
+              .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
+              .catch(error => console.log(error));
+          })
+      }
+      },
+  }
 }
 
 </script>
 
 <style lang="scss" scoped>
-
 .container-user {
   display: flex;
   flex-direction: column;
-  margin-top: 10%;
   &__card {
     display: flex;
     flex-direction: row;
@@ -75,7 +121,8 @@ export default {
       font-style: italic;
     }
   }
-  .container-button {
+}
+.container-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -98,6 +145,38 @@ export default {
       }
     }
   }
+
+.container-contributions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
+.card-infos {
+    display:flex;
+    flex-direction: column;
+    border-bottom: #e6e6e6 solid 3px;
+    padding: 2%;
+    width: 96%;
+    &__title {
+        display: flex;
+        border-right: #e6e6e6 solid 3px;
+        flex-direction: row;
+        p {
+            margin: 1%;
+            text-align: left;
+        }
+        &__name {
+            font-weight: bolder;
+            font-size: 20px;
+            &:hover {
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        }
+        &__date {
+            font-style: italic;
+        }
+    }
+}
 </style>

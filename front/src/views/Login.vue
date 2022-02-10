@@ -1,9 +1,5 @@
 <template>
     <main>
-        <div id='container'>
-            <div class='card-description'>
-                <p>image</p>
-            </div>
             <div class='card'>
                 <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
                 <h1 class='card__title' v-else>Inscription</h1>
@@ -20,7 +16,6 @@
                 <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
                 <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
             </div>
-        </div>
         <router-view/>
     </main>
 </template>
@@ -100,13 +95,7 @@ export default {
 
 <style lang="scss" scoped>
 
-#container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-    position: relative;
-}
+
 
 .card {
     background-color: rgb(226, 226, 226);
@@ -117,8 +106,6 @@ export default {
     padding: 30px;
     margin: auto;
     margin-top: 10%;
-    position: absolute;
-    right: 0;
     h1 {
         color: rgba(255, 0, 0, 0.829);
     }

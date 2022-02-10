@@ -31,8 +31,8 @@
 import axios from 'axios'
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-let userToken = userInLocalStorage.map(user => user.token);
-let userId = userInLocalStorage.map(user => user.userId);
+
+
 
 export default {
     name: "Header",
@@ -48,6 +48,8 @@ export default {
             this.$router.push('/');
         },
         getOneUser() {
+            let userId = userInLocalStorage.map(user => user.userId);
+            let userToken = userInLocalStorage.map(user => user.token);
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {
                 Authorization: "Bearer " + userToken

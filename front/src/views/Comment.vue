@@ -1,32 +1,30 @@
 <template>
     <main>
         <div class="container">
-            <div v-for="i in $store.state.topicInfos" :key="i">
-                <h1 v-if="i.id == this.$route.params.id">{{ i.title }}</h1>
+            <div v-for="i in topicInfos" :key="i">
+                <h1>{{ i.title }}</h1>
             </div>
-            <div v-for="item in $store.state.commentInfos" :key="item">
-                <div v-if="item.topicId == this.$route.params.id">
-                    <div class="card-infos">
-                        <div class="card-infos__user" v-for="allUsers in $store.state.allUsersInfos" :key="allUsers">
-                            <div class="user">
-                                <div v-if="item.image != null">
-                                    <p v-if="item.userId == allUsers.id">{{ allUsers.image }}</p>
-                                </div>
-                                <p class='button-get' :userId="item.id" v-if="item.userId == allUsers.id">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+            <div class="card-infos" v-for="item in commentInfos" :key="item">
+                <div v-for="allUsers in this.$store.state.allUsersInfos" :key="allUsers">
+                    <div class="card-infos__user" v-if="item.userId == allUsers.id">
+                        <div class="user">
+                            <div v-if="item.image != null">
+                                <p v-if="item.userId == allUsers.id">{{ allUsers.image }}</p>
                             </div>
-                        </div>
-                        <div class="card-infos__content">
-                            <p>{{ item.content }}</p>
-                        </div>
-                        <div class="card-infos__date">
-                                <p>Posté le {{ item.createdAt }}</p>
-                                <p v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
-                        </div>
-                        <div v-if="item.userId == this.$store.state.userInfos.id" class="card-infos__buttons">
-                            <button v-if="item.topicId == this.$route.params.id" class='button-modify' @click="modifyComment" :commentId="item.id">Modifier</button>
-                            <button  class='button-delete' @click="deleteComment" :commentId="item.id">Supprimer</button>
+                            <p class='button-get' :userId="item.userId" @click="getOneUser" v-if="item.userId == allUsers.id">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
                         </div>
                     </div>
+                </div>
+                <div class="card-infos__content">
+                    <p>{{ item.content }}</p>
+                </div>
+                <div class="card-infos__date">
+                    <p>Posté le {{ item.createdAt }}</p>
+                    <p v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
+                </div>
+                <div v-if="item.userId == this.$store.state.userInfos.id" class="container-buttons">
+                    <p class='button-modify buttons' @click="modifyComment" :commentId="item.id">Modifier</p>
+                    <p class='button-delete buttons' @click="deleteComment" :commentId="item.id">Supprimer</p>
                 </div>
             </div>
             <div class="card-create">
@@ -48,7 +46,6 @@ let userId = userInLocalStorage.map(user => user.userId);
 let userToken = userInLocalStorage.map(user => user.token);
 
 export default {
-
     name: 'Comment',
     data() {
         return {
@@ -71,14 +68,16 @@ export default {
     computed: {
     ...mapState({user: 'userInfos'}),
     ...mapState({allUsers: 'allUsersInfos'}),
-    ...mapState({topic: 'topicInfos'})
+    ...mapState({topic: 'topicInfos'}),
+    topicInfos() {
+      return this.$store.state.topicInfos.filter(item => item.id == this.$route.params.id)
+    },
+    commentInfos() {
+      return this.$store.state.commentInfos.filter(item => item.topicId == this.$route.params.id)
+    },
   },
     methods: {
         createComment() {
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-            
-            let userToken = userInLocalStorage.map(user => user.token);
-
             const topicId = this.$route.params.id;
 
             axios.post('http://localhost:3000/api/comment', {
@@ -94,10 +93,6 @@ export default {
             .catch(error => {console.log(error) })
         },
         modifyComment(){
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-            let userToken = userInLocalStorage.map(user => user.token);
-
             const copy = Object.assign({}, this.commentData);
 
             for(const key in copy) {
@@ -126,15 +121,10 @@ export default {
             }
         },
         deleteComment() {
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-            let userToken = userInLocalStorage.map(user => user.token);
-
             let buttons = document.querySelectorAll('.button-delete');
 
             for (let button of Array.from(buttons)) {
                 button.addEventListener("click", e => {
-
                     let commentId = e.target.getAttribute("commentId");
 
                     axios.delete(`http://localhost:3000/api/comment/${commentId}`,{ 
@@ -162,7 +152,7 @@ export default {
                         Authorization: "Bearer " + userToken
                         } }
                     )
-                    .then((response) => { console.log(response), this.$router.push(`/auth/${userId}`) })
+                    .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
                     .catch(error => console.log(error));
                 })
             }
@@ -172,7 +162,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .container {
     display: flex;
     flex-direction: column;
@@ -192,7 +181,7 @@ export default {
     &__user {
         display: flex;
         flex-direction: row;
-        border-bottom:  solid 1px #f2f2f2;
+        border-bottom: solid 2px #f2f2f2;
     }
     p {
         margin-top: 0;
@@ -211,7 +200,6 @@ export default {
         font-size: 10px;
         }
     }
-    
 }
 
 .card-create {
@@ -223,6 +211,31 @@ export default {
         width: 100%;
         text-decoration: none;
         margin-bottom: 10px;
+    }
+}
+
+.container-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: red;
+        border-radius: 10px;
+        font-weight: bold;
+        color: white;
+        height: 30px;
+        width:15%;
+        margin: 0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 400ms;
+        &:hover {
+            cursor: pointer;
+            filter: brightness(1.07);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
     }
 }
 
@@ -253,7 +266,4 @@ export default {
         cursor: pointer;
     }
 }
-
-
-
 </style>

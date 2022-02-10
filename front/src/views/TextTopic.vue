@@ -140,7 +140,7 @@ export default {
                     .catch(error => console.log(error));
                 })
             }
-        }
+        },
     },
 }
 </script>
@@ -157,7 +157,6 @@ export default {
         display: flex;
         flex-direction: column;
     }
-
 }
 
 .card-create {

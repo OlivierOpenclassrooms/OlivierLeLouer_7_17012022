@@ -46,7 +46,7 @@ const routes = [
     name: 'Comment',
     component: () => import("../views/Comment.vue"),
     meta: {
-      title:'Discussion X',
+      title:'Discussion',
     }
   },
   {
@@ -54,7 +54,7 @@ const routes = [
     name: 'EditUser',
     component: () => import("../views/EditUser.vue"),
     meta: {
-      title:'Utilisateur X ',
+      title:'Utilisateur',
     }
   },
 ]
