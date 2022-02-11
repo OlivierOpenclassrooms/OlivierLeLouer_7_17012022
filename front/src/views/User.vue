@@ -8,7 +8,7 @@
       </div>
       <div class="container-user">
         <div class="container-user__card">
-          <p v-if="item.image != null">{{ item.image }}</p>
+          <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
           <div class="container-user__card__name">
             <p>{{ item.prenom }} {{ item.nom }}</p>
           </div>
@@ -48,12 +48,13 @@ let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 export default {
   name: "User",
   mounted() {
-        this.$store.dispatch('getUserInfos');
-        this.$store.dispatch('getAllUsers');
-        this.$store.dispatch('getAllTopics');
-        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-        if (userInLocalStorage == null)
+        if (userInLocalStorage == null) {
           this.$router.push('/')
+        } else {
+          this.$store.dispatch('getUserInfos');
+          this.$store.dispatch('getAllUsers');
+          this.$store.dispatch('getAllTopics');
+        }
   },
   computed: {
     ...mapState({user: 'userInfos'}),
@@ -67,25 +68,18 @@ export default {
     },
   },
   methods: {
-    getOneTopic() {
+    getOneTopic(event) {
       let userToken = userInLocalStorage.map(user => user.token);
       
-      let buttons = document.querySelectorAll('.button-get');
+      let topicId = event.target.getAttribute("topicId");
 
-      for (let button of Array.from(buttons)) {
-          button.addEventListener("click", e => {
-
-              let topicId = e.target.getAttribute("topicId");
-
-              axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
-                  headers: {
-                  Authorization: "Bearer " + userToken
-                  } }
-              )
-              .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
-              .catch(error => console.log(error));
-          })
-      }
+      axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
+          headers: {
+          Authorization: "Bearer " + userToken
+          } }
+      )
+      .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
+      .catch(error => console.log(error));
     },
   }
 }
@@ -124,16 +118,22 @@ export default {
   &__card {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     margin-bottom: 2%;
+    align-items: center;
+    padding: 2%;
     &__name {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      font-weight: bold;
+      font-size: 20px;
     }
-    p {
-      display: flex;
+    img {
+      height:150px;
+      width: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 20px;
     }
   }
   &__card__bio {

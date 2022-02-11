@@ -27,12 +27,9 @@
   </header>
 </template>
 
+
 <script>
-import axios from 'axios'
-
-
-
-
+import axios from 'axios';
 
 export default {
     name: "Header",
@@ -63,9 +60,7 @@ export default {
                 )
                 .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
                 .catch(error => console.log(error));
-            } else {
-                alert('il faut vous connecter')
-            }
+            } 
         },
     }
 }

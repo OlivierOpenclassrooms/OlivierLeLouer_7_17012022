@@ -12,5 +12,6 @@ router.delete('/:id', auth, userCtrl.deleteUser);
 router.put('/:id', auth, multer, userCtrl.modifyUser);
 router.get('/:id', auth, userCtrl.getOneUser);
 router.get('/', auth, userCtrl.getAllUsers);
+router.put('/image/:id', auth, multer, userCtrl.modifyUserPicture);
 
 module.exports = router;

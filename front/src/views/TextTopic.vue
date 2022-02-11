@@ -10,15 +10,17 @@
             </div>
             <div class="container__infos">
                 <div class="card-infos" v-for="item in $store.state.topicInfos" :key="item">
-                    <div class="card-infos__title"> 
+                    <div class="card-infos__title">
                         <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
                     </div>
                     <div class="card-infos__title" v-for="user in $store.state.allUsersInfos" :key="user">
                         <p class="card-infos__title__user" v-if="item.userId == user.id">par {{ user.prenom }} {{ user.nom }}</p>
-                        <p v-if="item.userId == user.id && user.image != null ">{{ user.image }}</p>
+                        <div class="user-picture" v-if="item.userId == user.id">
+                            <img v-if="user.imageUrl != null" :src="user.imageUrl"/>
+                        </div>
                     </div>
                     <div class="card-infos__title">
-                        <p class="card-infos__title__date">créé le {{ item.createdAt }}</p>
+                        <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
                         <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
                     </div>
                 </div>
@@ -49,9 +51,13 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('getAllTopics');
-        this.$store.dispatch('getAllUsers');
-        this.$store.dispatch('getAllComments');
+        if (userInLocalStorage == null) {
+            this.$router.push('/');
+        } else {
+            this.$store.dispatch('getAllTopics');
+            this.$store.dispatch('getAllUsers');
+            this.$store.dispatch('getAllComments');
+        }
     },
 
     computed: {
@@ -60,6 +66,9 @@ export default {
     },
 
     methods: {
+        formatDate(date) {
+            return new Date(date);
+    },
         createTopic() {
             axios.post('http://localhost:3000/api/topic', {
                 title: this.dataTopic.title,
@@ -72,29 +81,22 @@ export default {
             .then( response => { console.log(response), this.$router.go()})
             .catch(error => {console.log(error)})
         },
-        deleteTopic() {
-            let buttons = document.querySelectorAll('.button-delete');
+        deleteTopic(event) {
+            let topicId = event.target.getAttribute("topicId");
 
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-
-                    let topicId = e.target.getAttribute("topicId");
-
-                    axios.delete(`http://localhost:3000/api/topic/${topicId}`,{ 
-                        headers: {
-                        Authorization: "Bearer " + userToken
-                        }
-                    })
-                    .then((response) => {
-                        console.log(response), this.$router.go()
-                    })
-                    .catch(error => 
-                        console.log(error)
-                    );
-                })
-            }
+            axios.delete(`http://localhost:3000/api/topic/${topicId}`,{ 
+                headers: {
+                Authorization: "Bearer " + userToken
+                }
+            })
+            .then((response) => {
+                console.log(response), this.$router.go()
+            })
+            .catch(error => 
+                console.log(error)
+            );
         },
-        modifyTopic(){
+        modifyTopic(event){
             const copy = Object.assign({}, this.dataEdit);
 
             for(const key in copy) {
@@ -102,44 +104,29 @@ export default {
                 delete copy[key]
                 }
             }
+            let topicId = event.target.getAttribute("topicId");
 
-            let buttons = document.querySelectorAll('.button-modify');
-
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-
-                    let topicId = e.target.getAttribute("topicId");
-
-                    axios.put(`http://localhost:3000/api/topic/${topicId}`, {
-                        title: this.dataTopic.title,
-                        description: this.dataTopic.description,
-                    }, { 
-                        headers: {
-                        Authorization: "Bearer " + userToken
-                        }
-                    })
-                    .then((response) => { console.log(response), this.$router.go() })
-                    .catch(error => console.log(error));
-                })
-            }
+            axios.put(`http://localhost:3000/api/topic/${topicId}`, {
+                title: this.dataTopic.title,
+                description: this.dataTopic.description,
+            }, { 
+                headers: {
+                Authorization: "Bearer " + userToken
+                }
+            })
+            .then((response) => { console.log(response), this.$router.go() })
+            .catch(error => console.log(error));
         },
-        getOneTopic() {
-            let buttons = document.querySelectorAll('.button-get');
+        getOneTopic(event) {
+            let topicId = event.target.getAttribute("topicId");
 
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-
-                    let topicId = e.target.getAttribute("topicId");
-
-                    axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
-                        headers: {
-                        Authorization: "Bearer " + userToken
-                        } }
-                    )
-                    .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
-                    .catch(error => console.log(error));
-                })
-            }
+            axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
+                headers: {
+                Authorization: "Bearer " + userToken
+                } }
+            )
+            .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
+            .catch(error => console.log(error));
         },
     },
 }
@@ -194,6 +181,7 @@ export default {
     border-bottom: #e6e6e6 solid 3px;
     padding: 2%;
     margin-top: 20px;
+    position: relative;
     &__title {
         display: flex;
         border-right: #e6e6e6 solid 3px;
@@ -219,6 +207,20 @@ export default {
         &__date {
             font-style: italic;
         }
+    }
+}
+
+.user-picture {
+    img {
+        height:100px;
+        width: 100px;
+        border-radius: 50%;
+        object-fit: cover;  
+        position: absolute;
+        right: 40px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
     }
 }
 

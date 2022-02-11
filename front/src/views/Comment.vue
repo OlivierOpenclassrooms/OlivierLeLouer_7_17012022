@@ -8,10 +8,10 @@
                 <div v-for="allUsers in this.$store.state.allUsersInfos" :key="allUsers">
                     <div class="card-infos__user" v-if="item.userId == allUsers.id">
                         <div class="user">
-                            <div v-if="item.image != null">
-                                <p v-if="item.userId == allUsers.id">{{ allUsers.image }}</p>
+                            <div v-if="allUsers.imageUrl != null">
+                                <img class="user__image" :src="allUsers.imageUrl"/>
                             </div>
-                            <p class='button-get' :userId="item.userId" @click="getOneUser" v-if="item.userId == allUsers.id">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                            <p class='button-get' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
                         </div>
                     </div>
                 </div>
@@ -58,12 +58,15 @@ export default {
 
     mounted() {
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-        this.$store.dispatch('getAllComments');
-        this.$store.dispatch('getAllUsers');
-        this.$store.dispatch('getUserInfos');
-        this.$store.dispatch('getAllTopics');
-        if (userInLocalStorage == null)
+        
+        if (userInLocalStorage == null) {
             this.$router.push('/')
+        } else {
+            this.$store.dispatch('getAllComments');
+            this.$store.dispatch('getAllUsers');
+            this.$store.dispatch('getUserInfos');
+            this.$store.dispatch('getAllTopics');
+        }
     },
     computed: {
     ...mapState({user: 'userInfos'}),
@@ -92,7 +95,7 @@ export default {
             .then( response => { console.log(response), this.$router.go() })
             .catch(error => {console.log(error) })
         },
-        modifyComment(){
+        modifyComment(event){
             const copy = Object.assign({}, this.commentData);
 
             for(const key in copy) {
@@ -100,62 +103,41 @@ export default {
                 delete copy[key]
                 }
             }
+            let commentId = event.target.getAttribute("commentId");
 
-            let buttons = document.querySelectorAll('.button-modify');
-
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-
-                    let commentId = e.target.getAttribute("commentId");
-
-                    axios.put(`http://localhost:3000/api/comment/${commentId}`, {
-                        content: this.commentData.content
-                    }, { 
-                        headers: {
-                        Authorization: "Bearer " + userToken
-                        }
-                    })
-                    .then((response) => { console.log(response), this.$router.go() })
-                    .catch(error => console.log(error));
-                })
-            }
+            axios.put(`http://localhost:3000/api/comment/${commentId}`, {
+                content: this.commentData.content
+            }, { 
+                headers: {
+                Authorization: "Bearer " + userToken
+                }
+            })
+            .then((response) => { console.log(response), this.$router.go() })
+            .catch(error => console.log(error));
         },
-        deleteComment() {
-            let buttons = document.querySelectorAll('.button-delete');
+        deleteComment(event) {
+            let commentId = event.target.getAttribute("commentId");
 
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-                    let commentId = e.target.getAttribute("commentId");
-
-                    axios.delete(`http://localhost:3000/api/comment/${commentId}`,{ 
-                        headers: {
-                        Authorization: "Bearer " + userToken
-                        }
-                    })
-                    .then((response) => {
-                        console.log(response), this.$router.go()
-                        })
-                    .catch(error => console.log(error));
+            axios.delete(`http://localhost:3000/api/comment/${commentId}`,{ 
+                headers: {
+                Authorization: "Bearer " + userToken
+                }
+            })
+            .then((response) => {
+                console.log(response), this.$router.go()
                 })
-            }
+            .catch(error => console.log(error));
         },
-        getOneUser() {
-            let buttons = document.querySelectorAll('.button-get');
+        getOneUser(event) {
+            let userId = event.target.getAttribute("userId");
 
-            for (let button of Array.from(buttons)) {
-                button.addEventListener("click", e => {
-
-                    let userId = e.target.getAttribute("userId");
-
-                    axios.get(`http://localhost:3000/api/auth/${userId}`, { 
-                        headers: {
-                        Authorization: "Bearer " + userToken
-                        } }
-                    )
-                    .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
-                    .catch(error => console.log(error));
-                })
-            }
+            axios.get(`http://localhost:3000/api/auth/${userId}`, { 
+                headers: {
+                Authorization: "Bearer " + userToken
+                } }
+            )
+            .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
+            .catch(error => console.log(error));
         },
     }
 }
@@ -264,6 +246,20 @@ export default {
     &:hover {
         text-decoration: underline;
         cursor: pointer;
+    }
+}
+
+.user {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    &__image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-right: 20px;
     }
 }
 </style>

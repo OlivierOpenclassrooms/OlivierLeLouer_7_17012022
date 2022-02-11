@@ -11,8 +11,8 @@
                     <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
                     <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
                 </div>
-                <button @click.prevent="login" v-if="mode == 'login'">S'identifier</button>
-                <button @click.prevent="signUp" v-else>S'inscrire</button>
+                <button @click.prevent="login" @click="reload" v-if="mode == 'login'">S'identifier</button>
+                <button @click.prevent="signUp" @click="reload" v-else>S'inscrire</button>
                 <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
                 <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
             </div>
@@ -24,6 +24,7 @@
 import axios from "axios";
 
 export default {
+
     name: "Login",
 
     data () {
@@ -47,6 +48,9 @@ export default {
     },
     
     methods: {
+        reload() {
+            
+        },
         switchToSignUp() {
             this.mode ='signUp'
         },

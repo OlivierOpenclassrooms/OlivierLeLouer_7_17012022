@@ -26,17 +26,19 @@ export default createStore({
     getUserInfos() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
-      let userId = userInLocalStorage.map(user => user.userId);
+      if (userInLocalStorage != null) {
+        let userId = userInLocalStorage.map(user => user.userId);
 
-      let userToken = userInLocalStorage.map(user => user.token);
+        let userToken = userInLocalStorage.map(user => user.token);
 
-      axios.get(`http://localhost:3000/api/auth/${userId}`, {
-        headers: {
-            Authorization: "Bearer " + userToken
-          }
-        })
-      .then(response => { this.commit('userInfos', response.data), console.log(response.data) })
-      .catch(error => console.log(error));
+        axios.get(`http://localhost:3000/api/auth/${userId}`, {
+          headers: {
+              Authorization: "Bearer " + userToken
+            }
+          })
+        .then(response => { this.commit('userInfos', response.data), console.log(response.data) })
+        .catch(error => console.log(error));
+      }
     },
     getAllTopics() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));

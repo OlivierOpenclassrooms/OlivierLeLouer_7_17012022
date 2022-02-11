@@ -86,7 +86,7 @@ exports.modifyUser = (req, res) => {
             if (user.id == userId) {
                 if (!req.body.password) {
                 if (req.file) {
-                    user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                    image= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
                 }
                 User.update(req.body, { where: { id: id } } )
                     .then(() => res.status(200).json({ message: 'Utilisateur modifié!' }))
@@ -103,7 +103,7 @@ exports.modifyUser = (req, res) => {
                             biographie: req.body.biographie,
                         };
                         if (req.file) {
-                            user.imageUrl= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                            user.image= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
                         }
                         User.update(user, { where: { id: id } } )
                             .then(() => res.status(200).json({ message: 'Mot de passe modifié!' }))
@@ -118,6 +118,45 @@ exports.modifyUser = (req, res) => {
         })
         .catch((error) => res.status(500).json({ error }));
 };
+
+exports.modifyUserPicture = (req, res) => {
+
+    const token = req.headers.authorization.split(' ')[1];
+    //Décode le token
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    //Extrait l'id utilisateur et compare à celui extrait du token
+    const userId = decodedToken.userId;
+
+    const id = req.params.id;
+
+    User.findByPk(id)
+        .then(user => {
+            if (user.id == userId) {
+                let image
+                if (req.file) {
+                    image = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                } else {
+                    image == null;
+                }; 
+                if (image == null) {
+                    res.status(400).json({ error: 'Vous n\'avez pas chargé l\'image !' })
+                    console.log(image)
+                } else {
+                    const user = {
+                        imageUrl: image,
+                    };
+                    User.update(user, { where: { id: id } } )
+                        .then(() => res.status(200).json({ message: 'Mot de passe modifié!' }))
+                        .catch((error) => res.status(400).json({ error } ));
+                }
+            } else {
+                res.status(401).json({ message: 'Opération non autorisée' } )
+            
+            }
+        })
+        .catch((error) => res.status(500).json({ error }));
+
+}
 
 exports.deleteUser = (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
