@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Topic = sequelize.define("topic", {
+    const Post = sequelize.define("post", {
       userId: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -8,7 +8,11 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
+      imageUrl: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
     });
   
-    return Topic;
+    return Post;
   };

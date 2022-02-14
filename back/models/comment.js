@@ -6,16 +6,16 @@ module.exports = (sequelize, Sequelize) => {
       },
       topicId: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
+      },
+      postId: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       content: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      imageUrl: {
-        type: Sequelize.STRING,
-        allowNull: true
-      }
     });
   
     return Comment;

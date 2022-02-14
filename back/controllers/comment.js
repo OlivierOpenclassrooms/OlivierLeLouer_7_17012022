@@ -8,6 +8,7 @@ exports.createComment = (req, res) => {
     const comment = {
         userId: req.body.userId,
         topicId: req.body.topicId,
+        postId: req.body.postId,
         content: req.body.content
     };
     Comment.create(comment)

@@ -7,6 +7,7 @@ export default createStore({
     userInfos: [],
     topicInfos: [],
     commentInfos: [],
+    postInfos: [],
   },
   mutations: {
     userInfos(state, userInfos) {
@@ -20,6 +21,9 @@ export default createStore({
     },
     commentInfos(state, commentInfos) {
       state.commentInfos = commentInfos
+    },
+    postInfos(state, postInfos) {
+      state.postInfos = postInfos
     },
   },
   actions: {
@@ -79,6 +83,20 @@ export default createStore({
         }
       })
         .then(response => { this.commit('allUsersInfos', response.data), console.log(response.data) 
+        })
+        .catch(error => { console.log(error)})
+    },
+    getAllPosts() {
+      let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+      let userToken = userInLocalStorage.map(user => user.token);
+
+      axios.get('http://localhost:3000/api/post', {
+        headers: {
+          Authorization: "Bearer " + userToken
+        }
+      })
+        .then(response => { this.commit('postInfos', response.data), console.log(response.data) 
         })
         .catch(error => { console.log(error)})
     },
