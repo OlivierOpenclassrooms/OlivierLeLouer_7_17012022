@@ -1,7 +1,6 @@
 const db = require("../models");
 const Comment = db.comments;
 const Op = db.Sequelize.Op;
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 exports.createComment = (req, res) => {
@@ -11,9 +10,13 @@ exports.createComment = (req, res) => {
         postId: req.body.postId,
         content: req.body.content
     };
+    if (topicId == null && postId == null) {
+        res.status(400).json({ error: 'Ce n\'est pas la bonne section' })
+    } else {
     Comment.create(comment)
         .then(data => { res.send(data); })
         .catch(error => res.status(400).json({ error }));
+    }
 };
 
 exports.getOneComment = (req, res) => {

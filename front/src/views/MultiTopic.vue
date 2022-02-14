@@ -9,33 +9,37 @@
                 <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
                 <p class="button-create" @click="createPost">Poster</p>
             </div>
-            <div class="card">
-                <div class="card__post" v-for="item in post" :key="item">
+            <div class="card" v-for="item in post" :key="item">
+                <div class="card-post">
                     <div v-for="allUsers in allUsers" :key="allUsers">
-                    <div class="post__user" v-if="item.userId == allUsers.id">
-                        <div class="user">
-                            <div v-if="allUsers.imageUrl != null">
-                                <img class="user__image" :src="allUsers.imageUrl"/>
+                        <div class="post__user" v-if="item.userId == allUsers.id">
+                            <div class="user">
+                                <div v-if="allUsers.imageUrl != null">
+                                    <img class="user__image" :src="allUsers.imageUrl"/>
+                                </div>
+                                <div class="user__description">
+                                    <p class='button-get user__description__name' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                                    <p class='user__description__create'>{{ item.createdAt }}</p>
+                                </div>
                             </div>
-                            <div class="user__description">
-                                <p class='button-get user__description__name' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
-                                <p class='user__description__create'>{{ item.createdAt }}</p>
-                            </div>
-                        </div>
-                        <div class="post">
-                            <div class="post__description">
-                                <p>{{ item.title }}</p>
-                            </div>
-                            <div class="post__picture">
-                                <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
+                            <div class="post">
+                                <div class="post__description">
+                                    <p>{{ item.title }}</p>
+                                </div>
+                                <div class="post__picture">
+                                    <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="create-comment">
+                        <input type='text' v-model="commentData.content" placeholder="Ecrire un commentaire"/>
+                        <p class="button-create" :postId="item.id" @click="createComment">Répondre</p>
+                    </div>
                 </div>
-                </div>
-                <div class="card__comment" v-for="item in commentInfos" :key="item">
-                    <div v-for="allUsers in this.$store.state.allUsersInfos" :key="allUsers">
-                        <div class="comment__user" v-if="item.userId == allUsers.id">
+                <div class="card-comment" v-for="item in comment" :key="item">
+                    <div v-for="allUsers in allUsers" :key="allUsers">
+                        <div class="card-comment__user" v-if="item.userId == allUsers.id">
                             <div class="user">
                                 <div v-if="allUsers.imageUrl != null">
                                     <img class="user__image" :src="allUsers.imageUrl"/>
@@ -98,17 +102,18 @@ name: 'multitopic',
     ...mapState({user: 'userInfos'}),
     ...mapState({allUsers: 'allUsersInfos'}),
     ...mapState({post: 'postInfos'}),
+    ...mapState({comment: 'commentInfos'}),
   },
     methods: {
 
         /*FUNCTIONS COMMENT*/
 
-        createComment() {
-            const topicId = this.$route.params.id;
+        createComment(event) {
+            const postId = event.target.getAttribute("commentId");
 
             axios.post('http://localhost:3000/api/comment', {
                 content: this.commentData.content,
-                topicId: topicId,
+                postId: postId,
                 userId: this.commentData.userId
             }, { 
                 headers: {
@@ -277,21 +282,18 @@ name: 'multitopic',
     align-items: center;
     min-width: 80%;
     padding: 2%;
-    &__post {
-        display: flex;
-        flex-direction: column;
-        min-width: 100%;
-        border: solid 2px #f2f2f2;
-        border-radius: 10px 10px 0 0;
-        margin-bottom: 30px;
-        &__user {
-            display: flex;
-            flex-direction: column;
-        }
-    }
+    margin-bottom: 30px;
 }
 
 /* POST */
+
+.card-post {
+    display: flex;
+    flex-direction: column;
+    min-width: 100%;
+    border: solid 2px #f2f2f2;
+    border-radius: 10px 10px 0 0;
+}
 
 .user {
     display:flex;
@@ -343,6 +345,8 @@ name: 'multitopic',
         display: flex;
         width: 100%;
         border-top: solid 2px #f2f2f2;
+        border-bottom: solid 2px #f2f2f2;
+        margin-bottom: 10px;
         align-content: center;
         justify-content: center;
         img {
@@ -353,6 +357,21 @@ name: 'multitopic',
     }
 }
 
+.create-comment {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+    input {
+        width: 75%;
+        border-radius: 10px 0px 0px 10px;
+    }
+}
+
 /* COMMENT */
+
+
 
 </style>

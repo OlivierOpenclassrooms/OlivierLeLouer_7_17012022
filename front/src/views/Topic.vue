@@ -30,8 +30,7 @@ export default {
 
 
 
-<style lang="scss" scoped>
-    
+<style lang="scss" scoped> 
 .container-topic {
     display: flex;
     flex-direction: row;
@@ -56,5 +55,4 @@ export default {
         }
     }
 }
-
 </style>

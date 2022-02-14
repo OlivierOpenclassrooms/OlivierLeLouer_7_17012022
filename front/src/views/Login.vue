@@ -99,8 +99,6 @@ export default {
 
 <style lang="scss" scoped>
 
-
-
 .card {
     background-color: rgb(226, 226, 226);
     width: 40%;
