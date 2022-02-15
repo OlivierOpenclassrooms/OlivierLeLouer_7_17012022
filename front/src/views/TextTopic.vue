@@ -9,7 +9,7 @@
                 <p class="button-create" @click="createTopic">Créer topic</p>
             </div>
             <div class="container__infos">
-                <div class="card-infos" v-for="item in $store.state.topicInfos" :key="item">
+                <div class="card-infos" v-for="item in topic" :key="item">
                     <div class="card-infos__title">
                         <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
                     </div>
@@ -22,6 +22,11 @@
                     <div class="card-infos__title">
                         <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
                         <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
+                    </div>
+                    <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
+                        <input type='text' v-model="dataTopic.title"/>
+                        <p class='button-modify buttons' @click="modifyTopic" :topicId="item.id">Modifier</p>
+                        <p class='button-delete buttons' @click="deleteTopic" :topicId="item.id">Supprimer</p>
                     </div>
                 </div>
             </div>
@@ -46,6 +51,7 @@ export default {
                 title: null,
                 image: null,
                 userId: userId[0],
+                userIdOrder: userId[0],
             },
         }
     },
@@ -57,12 +63,14 @@ export default {
             this.$store.dispatch('getAllTopics');
             this.$store.dispatch('getAllUsers');
             this.$store.dispatch('getAllComments');
+            this.$store.dispatch('getUserInfos');
         }
     },
 
     computed: {
         ...mapState({user: 'allUsersInfos'}),
         ...mapState({topic: 'topicInfos'}),
+        ...mapState({user: 'userInfos'}),
     },
 
     methods: {
@@ -72,7 +80,8 @@ export default {
         createTopic() {
             axios.post('http://localhost:3000/api/topic', {
                 title: this.dataTopic.title,
-                userId: this.dataTopic.userId
+                userId: this.dataTopic.userId,
+                userIdOrder: this.dataTopic.userId,
             }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
@@ -84,7 +93,9 @@ export default {
         deleteTopic(event) {
             let topicId = event.target.getAttribute("topicId");
 
-            axios.delete(`http://localhost:3000/api/topic/${topicId}`,{ 
+            axios.delete(`http://localhost:3000/api/topic/${topicId}`, {
+                userIdOrder: this.dataTopic.userIdOrder,
+            }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
                 }
@@ -106,12 +117,15 @@ export default {
             }
             let topicId = event.target.getAttribute("topicId");
 
+            console.log(userToken);
+
             axios.put(`http://localhost:3000/api/topic/${topicId}`, {
                 title: this.dataTopic.title,
                 description: this.dataTopic.description,
+                userIdOrder: this.dataTopic.userId,
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + userToken[0]
                 }
             })
             .then((response) => { console.log(response), this.$router.go() })

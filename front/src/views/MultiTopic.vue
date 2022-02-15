@@ -37,23 +37,25 @@
                         <p class="button-create" :postId="item.id" @click="createComment">Répondre</p>
                     </div>
                 </div>
-                <div class="card-comment" v-for="item in comment" :key="item">
-                    <div v-for="allUsers in allUsers" :key="allUsers">
-                        <div class="card-comment__user" v-if="item.userId == allUsers.id">
-                            <div class="user">
+                <div class="container-comment" v-for="i in comment" :key="i">
+                    <div v-if="item.id == i.postId">
+                        <div class="card-comment" v-for="allUsers in allUsers" :key="allUsers">
+                            <div class="card-comment__user" v-if="i.userId == allUsers.id">
                                 <div v-if="allUsers.imageUrl != null">
                                     <img class="user__image" :src="allUsers.imageUrl"/>
                                 </div>
-                                <p class='button-get' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                                <div class="user-comment">
+                                    <p class='button-get user__description__name' :userId="i.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                                    <div class="card-infos__date">
+                                        <p class='user__description__create'>Posté le {{ i.createdAt }}</p>
+                                        <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ i.updatedAt }}</p>
+                                    </div>
+                                    <div class="comment-content">
+                                        <p>{{ i.content }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-infos__content">
-                        <p>{{ item.content }}</p>
-                    </div>
-                    <div class="card-infos__date">
-                        <p>Posté le {{ item.createdAt }}</p>
-                        <p v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
                     </div>
                 </div>
             </div>
@@ -109,8 +111,8 @@ name: 'multitopic',
         /*FUNCTIONS COMMENT*/
 
         createComment(event) {
-            const postId = event.target.getAttribute("commentId");
-
+            const postId = event.target.getAttribute("postId");
+            console.log(postId);
             axios.post('http://localhost:3000/api/comment', {
                 content: this.commentData.content,
                 postId: postId,
@@ -283,6 +285,9 @@ name: 'multitopic',
     min-width: 80%;
     padding: 2%;
     margin-bottom: 30px;
+    border: solid 2px #f2f2f2;
+    border-radius: 10px;
+    margin-top: 20px;
 }
 
 /* POST */
@@ -291,8 +296,6 @@ name: 'multitopic',
     display: flex;
     flex-direction: column;
     min-width: 100%;
-    border: solid 2px #f2f2f2;
-    border-radius: 10px 10px 0 0;
 }
 
 .user {
@@ -371,7 +374,44 @@ name: 'multitopic',
 }
 
 /* COMMENT */
+.container-comment {
+    width: 100%;
+}
 
+.card-comment {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 1px;
+}
+.card-comment__user {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.user-comment {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    padding: 10px;
+    p {
+        margin: 0;
+    }
+}
 
+.comment-content {
+    display: flex;
+    margin-top: 5px;
+    flex-direction: row;
+    p {
+        text-align: left;
+    }
+}
 
 </style>

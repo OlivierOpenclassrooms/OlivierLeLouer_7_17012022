@@ -1,9 +1,12 @@
 const db = require("../models");
 const Comment = db.comments;
+const User = db.users;
 const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
 
 exports.createComment = (req, res) => {
+    topicId= req.body.topicId;
+    postId= req.body.postId;
     const comment = {
         userId: req.body.userId,
         topicId: req.body.topicId,
@@ -51,17 +54,29 @@ exports.modifyComment = (req, res) => {
 
     const id = req.params.id;
 
-    Comment.findByPk(id)
-        .then(comment => {
-            if (comment.userId == userId) {
+    const userIdOrder = req.body.userIdOrder;
+
+    User.findByPk(userIdOrder)
+        .then(user => {
+            if(user.isAdmin == true && user.id == userId) {
                 Comment.update(req.body, { where: { id: id } } )
-                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
-                    .catch(() => res.status(400).json({ error }));
-            } else {
-                res.status(401).json({ message: 'Opération non autorisée' })
+                    .then(() => res.status(200).json({ message: 'Commentaire modifié en tant qu\'administrateur !'}))
+                    .catch(( error ) => res.status(400).json({ error }));
+            } else { 
+                Comment.findByPk(id)
+                    .then(comment => {
+                        if (comment.userId == userId) {
+                            Comment.update(req.body, { where: { id: id } } )
+                                .then(() => res.status(200).json({ message: 'Commentaire modifié !'}))
+                                .catch(( error ) => res.status(400).json({ error }));
+                        } else {
+                            res.status(401).json({ message: 'Opération non autorisée' })
+                        }
+                    })
+                    .catch((error) => res.status(500).json({ error }));
             }
         })
-        .catch(() => res.status(500).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
 };
 
 exports.deleteComment = (req, res) => {
@@ -73,16 +88,28 @@ exports.deleteComment = (req, res) => {
 
     const id = req.params.id;
 
-    Comment.findByPk(id)
-        .then(comment => {
-            if (comment.userId == userId) {
+    const userIdOrder = req.body.userIdOrder;
+
+    User.findByPk(userIdOrder)
+        .then(user => {
+            if(user.isAdmin == true && user.id == userId) {
                 Comment.destroy( { where: { id: id } } )
-                    .then(() => res.status(200).json({ message: 'Utilisateur modifié!'}))
-                    .catch(() => res.status(400).json({ error }));
-            } else {
-                res.status(401).json({ message: 'Opération non autorisée' })
+                    .then(() => res.status(200).json({ message: 'Commentaire supprimé en tant qu\'administrateur !'}))
+                    .catch(( error ) => res.status(400).json({ error }));
+            } else { 
+                Comment.findByPk(id)
+                    .then(comment => {
+                        if (comment.userId == userId) {
+                            Comment.destroy( { where: { id: id } } )
+                                .then(() => res.status(200).json({ message: 'Commentaire supprimé !'}))
+                                .catch(( error ) => res.status(400).json({ error }));
+                        } else {
+                            res.status(401).json({ message: 'Opération non autorisée' })
+                        }
+                    })
+                    .catch((error) => res.status(500).json({ error }));
             }
         })
-        .catch(() => res.status(500).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
 };
 

@@ -1,5 +1,6 @@
 const db = require("../models");
 const Post = db.posts;
+const User = db.users;
 const Op = db.Sequelize.Op;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
@@ -48,7 +49,7 @@ exports.getAllPosts = (req, res) => {
       });
   };
 
-exports.modifyPost = (req, res) => {
+exports.modifyPostDescription = (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     //Décode le token
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
@@ -61,7 +62,7 @@ exports.modifyPost = (req, res) => {
         .then(post => {
             if (post.userId == userId) {
                 Post.update(req.body, { where: { id: id } } )
-                    .then(() => res.status(200).json({ message: 'Topic modifié!'}))
+                    .then(() => res.status(200).json({ message: 'Post modifié!'}))
                     .catch(( error ) => res.status(400).json({ error }));
             } else {
                 res.status(401).json({ message: 'Opération non autorisée' })
@@ -79,19 +80,42 @@ exports.deletePost = (req, res) => {
 
     const id = req.params.id;
 
-    Post.findByPk(id)
-        .then(post => {
-            if (post.id == userId) {
-                const filename = post.imageUrl.split('/images/')[1];
-                    //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
-                fs.unlink(`images/${filename}`, () => {
-                Post.destroy( { where: { id: id } } )
-                    .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
-                    .catch((error) => res.status(400).json({ error }));
-                    });
+    const userIdOrder = req.body.userIdOrder;
+
+    User.findByPk(userIdOrder)
+        .then(user => {
+            if(user.isAdmin == true && user.id == userId) {
+                Post.findByPk(id)
+                    .then(post => {
+                        if (post.id == userId) {
+                            const filename = post.imageUrl.split('/images/')[1];
+                                //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
+                            fs.unlink(`images/${filename}`, () => {
+                            Post.destroy( { where: { id: id } } )
+                                .then(() => res.status(200).json({ message: 'Post supprimé en tant qu\'administrateur !'}))
+                                .catch((error) => res.status(400).json({ error }));
+                                });
+                        } else {
+                            res.status(401).json({ message: 'Opération non autorisée' })
+                        }
+                    })
+                    .catch((error) => res.status(500).json({ error }));
             } else {
-                res.status(401).json({ message: 'Opération non autorisée' })
+                Post.findByPk(id)
+                    .then(post => {
+                        if (post.id == userId) {
+                            const filename = post.imageUrl.split('/images/')[1];
+                                //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
+                            fs.unlink(`images/${filename}`, () => {
+                            Post.destroy( { where: { id: id } } )
+                                .then(() => res.status(200).json({ message: 'Post supprimé!'}))
+                                .catch((error) => res.status(400).json({ error }));
+                                });
+                        } else {
+                            res.status(401).json({ message: 'Opération non autorisée' })
+                        }
+                    })
+                    .catch((error) => res.status(500).json({ error }));
             }
         })
-        .catch((error) => res.status(500).json({ error }));
 };
