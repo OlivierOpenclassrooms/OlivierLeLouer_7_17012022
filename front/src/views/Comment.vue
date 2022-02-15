@@ -5,7 +5,7 @@
                 <h1>{{ i.title }}</h1>
             </div>
             <div class="card-infos" v-for="item in commentInfos" :key="item">
-                <div v-for="allUsers in this.$store.state.allUsersInfos" :key="allUsers">
+                <div v-for="allUsers in allUsers" :key="allUsers">
                     <div class="card-infos__user" v-if="item.userId == allUsers.id">
                         <div class="user">
                             <div v-if="allUsers.imageUrl != null">
@@ -120,11 +120,11 @@ export default {
         deleteComment(event) {
             let commentId = event.target.getAttribute("commentId");
 
-            axios.delete(`http://localhost:3000/api/comment/${commentId}`, {
-                userIdOrder: this.commentData.userId
-            }, { 
+            axios.delete(`http://localhost:3000/api/comment/${commentId}`, { 
                 headers: {
                 Authorization: "Bearer " + userToken
+                }, data: {
+                    userIdOrder: this.commentData.userId,
                 }
             })
             .then((response) => { console.log(response), this.$router.go() })

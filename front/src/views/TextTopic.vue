@@ -13,7 +13,7 @@
                     <div class="card-infos__title">
                         <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
                     </div>
-                    <div class="card-infos__title" v-for="user in $store.state.allUsersInfos" :key="user">
+                    <div class="card-infos__title" v-for="user in allUsers" :key="user">
                         <p class="card-infos__title__user" v-if="item.userId == user.id">par {{ user.prenom }} {{ user.nom }}</p>
                         <div class="user-picture" v-if="item.userId == user.id">
                             <img v-if="user.imageUrl != null" :src="user.imageUrl"/>
@@ -51,7 +51,6 @@ export default {
                 title: null,
                 image: null,
                 userId: userId[0],
-                userIdOrder: userId[0],
             },
         }
     },
@@ -68,7 +67,7 @@ export default {
     },
 
     computed: {
-        ...mapState({user: 'allUsersInfos'}),
+        ...mapState({allUsers: 'allUsersInfos'}),
         ...mapState({topic: 'topicInfos'}),
         ...mapState({user: 'userInfos'}),
     },
@@ -93,11 +92,11 @@ export default {
         deleteTopic(event) {
             let topicId = event.target.getAttribute("topicId");
 
-            axios.delete(`http://localhost:3000/api/topic/${topicId}`, {
-                userIdOrder: this.dataTopic.userIdOrder,
-            }, { 
+            axios.delete(`http://localhost:3000/api/topic/${topicId}`, { 
                 headers: {
                 Authorization: "Bearer " + userToken
+                }, data: {
+                    userIdOrder: this.dataTopic.userId,
                 }
             })
             .then((response) => {

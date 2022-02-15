@@ -80,9 +80,11 @@ exports.modifyUser = (req, res) => {
 
     const id = req.params.id;
 
-    User.findByPk(id)
+    const userIdOrder = req.body.userIdOrder;
+
+    User.findByPk(userIdOrder)
         .then(user => {
-            if (user.id == userId || user.isAdmin == 1) {
+            if(user.isAdmin == true && user.id == userId) {
                 if (!req.body.password) {
                 if (req.file) {
                     image= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -109,10 +111,44 @@ exports.modifyUser = (req, res) => {
                             .catch((error) => res.status(400).json({ error } ));
                     })
                     .catch(error => res.status(500).json({ error }));
-                }
+                            }
             } else {
-                res.status(401).json({ message: 'Opération non autorisée' } )
-            
+                User.findByPk(id)
+                    .then(user => {
+                        if (user.id == userId) {
+                            if (!req.body.password) {
+                            if (req.file) {
+                                image= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                            }
+                            User.update(req.body, { where: { id: id } } )
+                                .then(() => res.status(200).json({ message: 'Utilisateur modifié!' }))
+                                .catch((error) => res.status(400).json({ error } ));
+                            } else {
+                                bcrypt.hash(req.body.password, 10)
+                                .then(hash => {
+                                    const user = {
+                                        email: req.body.email,
+                                        password: hash,
+                                        nom: req.body.nom,
+                                        prenom: req.body.prenom,
+                                        poste: req.body.poste,
+                                        biographie: req.body.biographie,
+                                    };
+                                    if (req.file) {
+                                        user.image= `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                                    }
+                                    User.update(user, { where: { id: id } } )
+                                        .then(() => res.status(200).json({ message: 'Mot de passe modifié!' }))
+                                        .catch((error) => res.status(400).json({ error } ));
+                                })
+                                .catch(error => res.status(500).json({ error }));
+                            }
+                        } else {
+                            res.status(401).json({ message: 'Opération non autorisée' } )
+                        
+                        }
+                    })
+                    .catch((error) => res.status(500).json({ error }));
             }
         })
         .catch((error) => res.status(500).json({ error }));
@@ -133,8 +169,6 @@ exports.modifyUserPicture = (req, res) => {
     User.findByPk(userIdOrder)
         .then(user => {
             if(user.isAdmin == true && user.id == userId) {
-                User.findByPk(id)
-                    .then(user => {
                         let image
                         if (req.file) {
                             image = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -148,12 +182,12 @@ exports.modifyUserPicture = (req, res) => {
                                 const filename = user.imageUrl.split('/images/')[1];
                                 //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
                                 fs.unlink(`images/${filename}`, () => {
-                                const user = {
-                                    imageUrl: image,
-                                };
-                                User.update(user, { where: { id: id } } )
-                                    .then(() => res.status(200).json({ message: 'Photo modifiée en tant qu\'administrateur!' }))
-                                    .catch((error) => res.status(400).json({ error } ));
+                                    const user = {
+                                        imageUrl: image,
+                                    };
+                                    User.update(user, { where: { id: id } } )
+                                        .then(() => res.status(200).json({ message: 'Photo modifiée en tant qu\'administrateur!' }))
+                                        .catch((error) => res.status(400).json({ error } ));
                                 });
                             } else {
                                 const user = {
@@ -164,8 +198,6 @@ exports.modifyUserPicture = (req, res) => {
                                     .catch((error) => res.status(400).json({ error } ));
                             }   
                         }
-                    })
-                    .catch((error) => res.status(500).json({ error }));
             } else {
                 User.findByPk(id)
                     .then(user => {
@@ -183,12 +215,12 @@ exports.modifyUserPicture = (req, res) => {
                                     const filename = user.imageUrl.split('/images/')[1];
                                     //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
                                     fs.unlink(`images/${filename}`, () => {
-                                    const user = {
-                                        imageUrl: image,
-                                    };
-                                    User.update(user, { where: { id: id } } )
-                                        .then(() => res.status(200).json({ message: 'Photo modifiée !' }))
-                                        .catch((error) => res.status(400).json({ error } ));
+                                        const user = {
+                                            imageUrl: image,
+                                        };
+                                        User.update(user, { where: { id: id } } )
+                                            .then(() => res.status(200).json({ message: 'Photo modifiée !' }))
+                                            .catch((error) => res.status(400).json({ error } ));
                                     });
                                 } else {
                                     const user = {
@@ -206,6 +238,7 @@ exports.modifyUserPicture = (req, res) => {
                     .catch((error) => res.status(500).json({ error }));
             }
         })
+        .catch((error) => res.status(500).json({ error }));
 };
 
 exports.deleteUser = (req, res) => {
@@ -222,39 +255,35 @@ exports.deleteUser = (req, res) => {
     User.findByPk(userIdOrder)
         .then(user => {
             if(user.isAdmin == true && user.id == userId) {
-                User.findByPk(id)
-                    .then(user => {
-                        if(user.imageUrl != null) {
-                            const filename = user.imageUrl.split('/images/')[1];
-                                //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
-                            fs.unlink(`images/${filename}`, () => {
-                            User.destroy( { where: { id: id } } )
-                                .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
-                                .catch((error) => res.status(400).json({ error }));
-                                });
-                        } else {
-                            User.destroy( { where: { id: id } } )
+                if(user.imageUrl != null) {
+                    const filename = user.imageUrl.split('/images/')[1];
+                        //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
+                    fs.unlink(`images/${filename}`, () => {
+                        User.destroy( { where: { id: id } } )
                             .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
                             .catch((error) => res.status(400).json({ error }));
-                            }
-                    })
-                    .catch((error) => res.status(500).json({ error }));
+                    });
+                } else {
+                    User.destroy( { where: { id: id } } )
+                        .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
+                        .catch((error) => res.status(400).json({ error }));
+                    }
             } else {
                 User.findByPk(id)
                     .then(user => {
                         if (user.id == userId) {
                             if(user.imageUrl != null) {
-                            const filename = user.imageUrl.split('/images/')[1];
-                                //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
-                            fs.unlink(`images/${filename}`, () => {
-                            User.destroy( { where: { id: id } } )
-                                .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
-                                .catch((error) => res.status(400).json({ error }));
+                                const filename = user.imageUrl.split('/images/')[1];
+                                    //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
+                                fs.unlink(`images/${filename}`, () => {
+                                    User.destroy( { where: { id: id } } )
+                                        .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
+                                        .catch((error) => res.status(400).json({ error }));
                                 });
                             } else {
                                 User.destroy( { where: { id: id } } )
-                                .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
-                                .catch((error) => res.status(400).json({ error }));
+                                    .then(() => res.status(200).json({ message: 'Utilisateur supprimé!'}))
+                                    .catch((error) => res.status(400).json({ error }));
                             }
                         } else {
                             res.status(401).json({ message: 'Opération non autorisée' })
@@ -263,6 +292,7 @@ exports.deleteUser = (req, res) => {
                     .catch((error) => res.status(500).json({ error }));
             }
         })
+        .catch((error) => res.status(500).json({ error }));
 };
 
 exports.getAllUsers = (req, res) => {

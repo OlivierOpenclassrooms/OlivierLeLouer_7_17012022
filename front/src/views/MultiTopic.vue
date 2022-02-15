@@ -36,6 +36,11 @@
                         <input type='text' v-model="commentData.content" placeholder="Ecrire un commentaire"/>
                         <p class="button-create" :postId="item.id" @click="createComment">Répondre</p>
                     </div>
+                    <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
+                        <input type='text' v-model="dataPost.title"/>
+                        <p class='button-modify buttons' @click="modifyPost" :postId="item.id">Modifier</p>
+                        <p class='button-delete buttons' @click="deletePost" :postId="item.id">Supprimer</p>
+                    </div>
                 </div>
                 <div class="container-comment" v-for="i in comment" :key="i">
                     <div v-if="item.id == i.postId">

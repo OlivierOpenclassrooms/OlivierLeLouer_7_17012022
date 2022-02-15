@@ -22,13 +22,10 @@ export default {
         if (userInLocalStorage == null) {
             this.$router.push('/')
         } 
-        
     }
 }
 
 </script>
-
-
 
 <style lang="scss" scoped> 
 .container-topic {

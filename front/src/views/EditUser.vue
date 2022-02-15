@@ -9,9 +9,9 @@
           <p class="form__button" @click="editUserPicture">Modifier mon image</p>
         </div>
         <div class="user">
-          <input class="user__input-infos" type="email" v-model="dataEdit.email" :placeholder="user.email" />
-          <input class="user__input-infos" type="text" v-model="dataEdit.prenom" :placeholder="user.prenom" />
-          <input class="user__input-infos" type="text" v-model="dataEdit.nom" :placeholder="user.nom" />
+          <input class="user__input-infos" type="email" v-model="dataEdit.email" placeholder='Entrer email' />
+          <input class="user__input-infos" type="text" v-model="dataEdit.prenom" placeholder='Entrer prénom' />
+          <input class="user__input-infos" type="text" v-model="dataEdit.nom" placeholder='Entrer nom' />
           <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste" />
           <textarea class="user__input-infos" type="text" v-model="dataEdit.biographie" placeholder="Biographie"></textarea>
           <p class="user__button" @click="editUser">Modifier mes informations</p>
@@ -37,6 +37,10 @@ import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
+let userId = userInLocalStorage.map(user => user.userId);
+
+let userToken = userInLocalStorage.map(user => user.token);
+
 export default {
   name: "EditUser",
 
@@ -50,6 +54,8 @@ export default {
         prenom: null,
         password: null,
         image: null,
+        isAdmin: null,
+        userIdOrder: userId[0],
       },
       deleteAccount : {
         password: null,
@@ -75,22 +81,21 @@ export default {
       this.dataEdit.image = e.target.files[0] || e.dataTransfer.files;
     },
     editUser() {
-      let userId = userInLocalStorage.map(user => user.userId || user.id);
+      const id = this.$route.params.id;
 
-      let userToken = userInLocalStorage.map(user => user.token);
-  
       const copy = Object.assign({}, this.dataEdit);
       for(const key in copy) {
         if (copy[key] == null) {
           delete copy[key]
         }
       }
-      axios.put(`http://localhost:3000/api/auth/${userId}`, {
-        ...copy
+      axios.put(`http://localhost:3000/api/auth/${id}`, {
+        ...copy, 
+        userIdOrder: this.dataEdit.userIdOrder
       }, { headers: {
           Authorization: "Bearer " + userToken
-        } }
-      )
+        } 
+      })
       .then(response => {  
         console.log(response), 
         this.$router.go() 
@@ -98,19 +103,18 @@ export default {
       .catch(error => { console.log(error) })
     },
     editUserPicture() {
-      let userId = userInLocalStorage.map(user => user.userId || user.id);
-
-      let userToken = userInLocalStorage.map(user => user.token);
+      const id = this.$route.params.id;
 
       const formData = new FormData();
       formData.append("image", this.dataEdit.image);
+      formData.append("userIdOrder", this.dataEdit.userIdOrder);
       console.log("test récup", formData.get("image"));
 
-      axios.put(`http://localhost:3000/api/auth/image/${userId}`, formData,
+      axios.put(`http://localhost:3000/api/auth/image/${id}`, formData,
        { headers: {
           Authorization: "Bearer " + userToken
-        } }
-      )
+        },
+      })
       .then(response => {  
         console.log(response), 
         this.$router.go() 
@@ -118,13 +122,13 @@ export default {
       .catch(error => { console.log(error) })
     },
     deleteUser() {
-      let userId = userInLocalStorage.map(user => user.userId || user.id);
+      const id = this.$route.params.id;
 
-      let userToken = userInLocalStorage.map(user => user.token);
-
-      axios.delete(`http://localhost:3000/api/auth/${userId}`,  
+      axios.delete(`http://localhost:3000/api/auth/${id}`,  
       { headers: {
           Authorization: "Bearer " + userToken
+          }, data: {
+            userIdOrder: this.dataEdit.userIdOrder,
           }
         }
       )
