@@ -124,7 +124,7 @@ exports.modifyPostPicture = (req, res) => {
             } else {
                 Post.findByPk(id)
                     .then(post => {
-                        if (post.id == userId) {
+                        if (post.userId == userId) {
                             let image
                             if (req.file) {
                                 image = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -183,7 +183,7 @@ exports.deletePost = (req, res) => {
             } else {
                 Post.findByPk(id)
                     .then(post => {
-                        if (post.id == userId) {
+                        if (post.userId == userId) {
                             const filename = post.imageUrl.split('/images/')[1];
                                 //Utilisation de la fonction unlink pour supprimer l'image et suppression de toute la Sauce
                             fs.unlink(`images/${filename}`, () => {

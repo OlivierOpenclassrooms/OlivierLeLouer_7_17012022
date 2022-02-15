@@ -92,18 +92,11 @@ export default {
                 headers: {
                 Authorization: "Bearer " + userToken
                 }
-        })
+            })
             .then( response => { console.log(response), this.$router.go() })
             .catch(error => {console.log(error) })
         },
         modifyComment(event){
-            const copy = Object.assign({}, this.commentData);
-
-            for(const key in copy) {
-                if (copy[key] == null) {
-                delete copy[key]
-                }
-            }
             let commentId = event.target.getAttribute("commentId");
 
             axios.put(`http://localhost:3000/api/comment/${commentId}`, {

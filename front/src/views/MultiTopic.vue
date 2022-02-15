@@ -22,14 +22,14 @@
                                     <p class='user__description__create'>{{ item.createdAt }}</p>
                                 </div>
                             </div>
-                            <div class="post">
-                                <div class="post__description">
-                                    <p>{{ item.title }}</p>
-                                </div>
-                                <div class="post__picture">
-                                    <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                    <div class="post">
+                        <div class="post__description">
+                            <p>{{ item.title }}</p>
+                        </div>
+                        <div class="post__picture">
+                            <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
                         </div>
                     </div>
                     <div class="create-comment">
@@ -38,7 +38,9 @@
                     </div>
                     <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
                         <input type='text' v-model="dataPost.title"/>
-                        <p class='button-modify buttons' @click="modifyPost" :postId="item.id">Modifier</p>
+                        <p class='button-modify buttons' @click="modifyPostDescription" :postId="item.id">Modifier description</p>
+                        <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
+                        <p class='button-modify buttons' @click="modifyPostPicture" :postId="item.id">Modifier image</p>
                         <p class='button-delete buttons' @click="deletePost" :postId="item.id">Supprimer</p>
                     </div>
                 </div>
@@ -117,7 +119,7 @@ name: 'multitopic',
 
         createComment(event) {
             const postId = event.target.getAttribute("postId");
-            console.log(postId);
+            
             axios.post('http://localhost:3000/api/comment', {
                 content: this.commentData.content,
                 postId: postId,
@@ -131,17 +133,11 @@ name: 'multitopic',
             .catch(error => {console.log(error) })
         },
         modifyComment(event){
-            const copy = Object.assign({}, this.commentData);
-
-            for(const key in copy) {
-                if (copy[key] == null) {
-                delete copy[key]
-                }
-            }
             let commentId = event.target.getAttribute("commentId");
 
             axios.put(`http://localhost:3000/api/comment/${commentId}`, {
-                content: this.commentData.content
+                content: this.commentData.content,
+                userIdOrder: this.commentData.userId
             }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
@@ -156,6 +152,8 @@ name: 'multitopic',
             axios.delete(`http://localhost:3000/api/comment/${commentId}`,{ 
                 headers: {
                 Authorization: "Bearer " + userToken
+                }, data: {
+                    userIdOrder: this.commentData.userId
                 }
             })
             .then((response) => {
@@ -205,7 +203,9 @@ name: 'multitopic',
             axios.delete(`http://localhost:3000/api/post/${postId}`,{ 
                 headers: {
                 Authorization: "Bearer " + userToken
-                }
+                }, data: {
+                    userIdOrder: this.dataPost.userId,
+                },
             })
             .then((response) => {
                 console.log(response), this.$router.go()
@@ -214,19 +214,12 @@ name: 'multitopic',
                 console.log(error)
             );
         },
-        modifyPost(event){
-            const copy = Object.assign({}, this.dataPost);
-
-            for(const key in copy) {
-                if (copy[key] == null) {
-                delete copy[key]
-                }
-            }
+        modifyPostDescription(event){
             let postId = event.target.getAttribute("postId");
 
             axios.put(`http://localhost:3000/api/post/${postId}`, {
                 title: this.dataPost.title,
-                description: this.dataPost.description,
+                userIdOrder: this.dataPost.userId,
             }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
@@ -234,6 +227,25 @@ name: 'multitopic',
             })
             .then((response) => { console.log(response), this.$router.go() })
             .catch(error => console.log(error));
+        },
+        modifyPostPicture(event) {
+            let postId = event.target.getAttribute("postId");
+
+            const formData = new FormData();
+            formData.append("image", this.dataPost.image);
+            formData.append("userIdOrder", this.dataPost.userId);
+            console.log("test récup", formData.get("image"));
+
+            axios.put(`http://localhost:3000/api/post/image/${postId}`, formData,
+            { headers: {
+                Authorization: "Bearer " + userToken
+                },
+            })
+            .then(response => {  
+                console.log(response), 
+                this.$router.go() 
+            })
+            .catch(error => { console.log(error) })
         },
     }
 }
