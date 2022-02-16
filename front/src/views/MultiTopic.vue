@@ -2,7 +2,7 @@
     <main>
         <div class="container">
             <div class="container__title">
-                <h1>Discussions :</h1>
+                <h1>Mur :</h1>
             </div>
             <div class="card-create">
                 <input type='text' v-model="dataPost.title" placeholder="Description"/>
@@ -123,6 +123,7 @@ name: 'multitopic',
 
         createComment(event) {
             const postId = event.target.getAttribute("postId");
+            console.log(postId)
             
             axios.post('http://localhost:3000/api/comment', {
                 content: this.commentData.content,

@@ -26,12 +26,17 @@
     <div class="container-contributions">
       <h2>Contributions</h2>
       <div class="card-infos" v-for="i in topicInfos" :key="i">
-          <div class="card-infos__title">
+          <div class="card-infos__title" >
             <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="i.id">{{ i.title }}</p>
           </div>
           <div class="card-infos__title">
               <p class="card-infos__title__date">créé le {{ formatDate(i.createdAt) }}</p>
               <p class="card-infos__title__date" v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
+          </div>
+          <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
+              <input type='text' v-model="dataTopic.title"/>
+              <p class='button-modify buttons' @click="modifyComment" :commentId="i.id">Modifier</p>
+              <p class='button-delete buttons' @click="deleteComment" :commentId="i.id">Supprimer</p>
           </div>
       </div>
     </div>
@@ -47,6 +52,13 @@ let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
 export default {
   name: "User",
+   data() {
+      return {
+          dataTopic: {
+            title: null,
+          },
+        }
+    },
   mounted() {
         if (userInLocalStorage == null) {
           this.$router.push('/')
@@ -91,6 +103,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+/*USER*/
+
 .card-title {
   display: flex;
   flex-direction: row;
@@ -154,6 +169,8 @@ export default {
   }
 }
 
+/*CONTRIBUTIONS*/
+
 .container-contributions {
   display: flex;
   flex-direction: column;
@@ -189,4 +206,9 @@ export default {
         }
     }
 }
+
+/*MUR*/
+
+
+
 </style>

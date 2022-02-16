@@ -1,6 +1,7 @@
 const db = require("../models");
 const Topic = db.topics;
 const User = db.users;
+const Comment = db.comments;
 const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
 const { error } = require("console");
@@ -89,11 +90,17 @@ exports.deleteTopic = (req, res) => {
                 Topic.destroy( { where: { id: id } } )
                     .then(() => res.status(200).json({ message: 'Topic supprimé!'}))
                     .catch(( error ) => res.status(400).json({ error }));
+                Comment.destroy( { where: { topicId: id } } )
+                    .then(() => res.status(200).json({ message: 'Topic supprimé!'}))
+                    .catch(( error ) => res.status(400).json({ error }));
             } else { 
                 Topic.findByPk(id)
                     .then(topic => {
                         if (topic.userId == userId) {
                             Topic.destroy( { where: { id: id } } )
+                                .then(() => res.status(200).json({ message: 'Topic supprimé!'}))
+                                .catch(( error ) => res.status(400).json({ error }));
+                            Comment.destroy( { where: { topicId: id } } )
                                 .then(() => res.status(200).json({ message: 'Topic supprimé!'}))
                                 .catch(( error ) => res.status(400).json({ error }));
                         } else {

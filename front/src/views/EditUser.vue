@@ -1,12 +1,15 @@
 <template>
   <main>
-    <h1>Modifier mon compte</h1>
+    <div class="title">
+      <h1>Modifier le compte</h1>
+      <p class="form__button delete-button" @click="deleteUser">Supprimer le compte</p>
+    </div>
     <div class="container-edit">
       <div class="form-infos">
         <div class="picture">
           <label for="file" class="label-file">Choisir une image</label>
           <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-          <p class="form__button" @click="editUserPicture">Modifier mon image</p>
+          <p class="form__button" @click="editUserPicture">Modifier la photo de profil</p>
         </div>
         <div class="user">
           <input class="user__input-infos" type="email" v-model="dataEdit.email" placeholder='Entrer email' />
@@ -14,17 +17,13 @@
           <input class="user__input-infos" type="text" v-model="dataEdit.nom" placeholder='Entrer nom' />
           <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste" />
           <textarea class="user__input-infos" type="text" v-model="dataEdit.biographie" placeholder="Biographie"></textarea>
-          <p class="user__button" @click="editUser">Modifier mes informations</p>
+          <p class="user__button" @click="editUser">Modifier les informations</p>
         </div>
       </div>
       <div class="form form-space">
-        <input class="form__input" type="password" placeholder="Nouveau mot de passe"/>
+        <input class="form__input" type="password" v-model="passwordCheck.password" placeholder="Nouveau mot de passe"/>
         <input class="form__input" type="password" v-model="dataEdit.password" placeholder="Saisissez une seconde fois le nouveau mot de passe"/>
-        <p class="form__button" @click="editUser">Modifier mon mot de passe</p>
-      </div>
-      <div class="form form-space">
-        <input class="form__input" type="password" v-model="deleteAccount.password" placeholder="Vérification du mot de passe"/>
-        <p class="form__button" @click="deleteUser">Supprimer mon compte</p>
+        <p class="form__button" @click="editUserPassword">Modifier le mot de passe</p>
       </div>
     </div>
   </main>
@@ -57,7 +56,7 @@ export default {
         isAdmin: null,
         userIdOrder: userId[0],
       },
-      deleteAccount : {
+      passwordCheck : {
         password: null,
       }
     }
@@ -69,7 +68,7 @@ export default {
       this.$router.push('/')
     } else {
       this.$store.dispatch('getUserInfos');
-    }
+    } 
   },
 
   computed: {
@@ -102,6 +101,30 @@ export default {
       })
       .catch(error => { console.log(error) })
     },
+    editUserPassword() {
+      const id = this.$route.params.id;
+
+      if(this.passwordCheck.password == this.dataEdit.password) {
+
+        axios.put(`http://localhost:3000/api/auth/${id}`, {
+          password: this.dataEdit.password,
+          userIdOrder: this.dataEdit.userIdOrder
+          }, { 
+            headers: {
+            Authorization: "Bearer " + userToken
+            } 
+        })
+        .then(response => {  
+          console.log(response), 
+          this.$router.go() 
+        })
+        .catch(error => { console.log(error) })
+
+        } else {
+          alert('Veuillez taper deux fois le même mot de passe !')
+        }
+      
+    },
     editUserPicture() {
       const id = this.$route.params.id;
 
@@ -111,7 +134,7 @@ export default {
       console.log("test récup", formData.get("image"));
 
       axios.put(`http://localhost:3000/api/auth/image/${id}`, formData,
-       { headers: {
+        { headers: {
           Authorization: "Bearer " + userToken
         },
       })
@@ -124,14 +147,14 @@ export default {
     deleteUser() {
       const id = this.$route.params.id;
 
-      axios.delete(`http://localhost:3000/api/auth/${id}`,  
-      { headers: {
+      axios.delete(`http://localhost:3000/api/auth/${id}`, { 
+        headers: {
           Authorization: "Bearer " + userToken
-          }, data: {
-            userIdOrder: this.dataEdit.userIdOrder,
-          }
+        }, 
+        data: {
+          userIdOrder: this.dataEdit.userIdOrder,
         }
-      )
+      })
       .then(() => {
         localStorage.clear();
         this.$router.push('/');
@@ -143,6 +166,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.title {
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
 
 .container-edit {
   display: flex;
@@ -234,6 +263,10 @@ export default {
         box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
       }
   }
+}
+
+.delete-button {
+  width: 25%;
 }
 
 .form-space {

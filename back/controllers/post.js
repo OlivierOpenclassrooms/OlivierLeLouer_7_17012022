@@ -1,6 +1,7 @@
 const db = require("../models");
 const Post = db.posts;
 const User = db.users;
+const Comment = db.comments;
 const Op = db.Sequelize.Op;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
@@ -179,6 +180,9 @@ exports.deletePost = (req, res) => {
                             Post.destroy( { where: { id: id } } )
                                 .then(() => res.status(200).json({ message: 'Post supprimé en tant qu\'administrateur !'}))
                                 .catch((error) => res.status(400).json({ error }));
+                            Comment.destroy( { where: { postId: id } } )
+                                .then(() => res.status(200).json({ message: 'Topic supprimé!'}))
+                                .catch(( error ) => res.status(400).json({ error }));
                         }); 
                     })
                     .catch((error) => res.status(500).json({ error }));
@@ -192,6 +196,9 @@ exports.deletePost = (req, res) => {
                                 Post.destroy( { where: { id: id } } )
                                     .then(() => res.status(200).json({ message: 'Post supprimé!'}))
                                     .catch((error) => res.status(400).json({ error }));
+                                Comment.destroy( { where: { postId: id } } )
+                                    .then(() => res.status(200).json({ message: 'Topic supprimé!'}))
+                                    .catch(( error ) => res.status(400).json({ error }));
                             });
                         } else {
                             res.status(401).json({ message: 'Opération non autorisée' })

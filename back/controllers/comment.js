@@ -5,8 +5,8 @@ const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
 
 exports.createComment = (req, res) => {
-    topicId= req.body.topicId;
-    postId= req.body.postId;
+    let topicId= req.body.topicId;
+    let postId= req.body.postId;
     const comment = {
         userId: req.body.userId,
         topicId: req.body.topicId,
