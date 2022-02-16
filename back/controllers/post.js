@@ -40,7 +40,9 @@ exports.getAllPosts = (req, res) => {
     const title = req.query.title;
     const condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
   
-    Post.findAll({ where: condition })
+    Post.findAll({ where: condition, order: [
+        ['createdAt', 'DESC'],
+    ]})
       .then(data => {res.send(data);
     })
       .catch(error => {

@@ -21,7 +21,7 @@
                     </div>
                     <div class="card-infos__title">
                         <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
-                        <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
+                        <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
                     </div>
                     <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
                         <input type='text' v-model="dataTopic.title"/>
@@ -70,12 +70,16 @@ export default {
         ...mapState({allUsers: 'allUsersInfos'}),
         ...mapState({topic: 'topicInfos'}),
         ...mapState({user: 'userInfos'}),
+        ...mapState({comment: 'commentInfos'}),
     },
 
     methods: {
-        formatDate(date) {
-            return new Date(date);
-    },
+        formatDate(e) {
+            const date = new Date(e);
+            const day = date.toLocaleDateString();
+            const time = date.toLocaleTimeString();
+            return `${day} à ${time}`
+        },
         createTopic() {
             axios.post('http://localhost:3000/api/topic', {
                 title: this.dataTopic.title,

@@ -19,8 +19,8 @@
                     <p>{{ item.content }}</p>
                 </div>
                 <div class="card-infos__date">
-                    <p>Posté le {{ item.createdAt }}</p>
-                    <p v-if="item.updatedAt != item.createdAt">Edité le {{ item.updatedAt }}</p>
+                    <p>Posté le {{ formatDate(item.createdAt) }}</p>
+                    <p v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
                 </div>
                 <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
                     <input type='text' v-model="commentData.content"/>
@@ -81,6 +81,12 @@ export default {
     },
   },
     methods: {
+        formatDate(e) {
+            const date = new Date(e);
+            const day = date.toLocaleDateString();
+            const time = date.toLocaleTimeString();
+            return `${day} à ${time}`
+        },
         createComment() {
             const topicId = this.$route.params.id;
 
@@ -175,6 +181,7 @@ export default {
         p {
         font-style: italic;
         font-size: 10px;
+        margin-right: 10px;
         }
     }
 }

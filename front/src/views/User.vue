@@ -19,7 +19,7 @@
           <p>{{ item.poste }}</p>
           <h3>Biographie</h3>
           <p>{{ item.biographie }}</p>
-          <span>Membre depuis le {{ item.createdAt }}</span>
+          <span>Membre depuis le {{ formatDate(item.createdAt) }}</span>
         </div>
       </div>
     </div>
@@ -30,8 +30,8 @@
             <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="i.id">{{ i.title }}</p>
           </div>
           <div class="card-infos__title">
-              <p class="card-infos__title__date">créé le {{ i.createdAt }}</p>
-              <p class="card-infos__title__date" v-if="i.updatedAt != i.createdAt">Edité le {{ i.updatedAt }}</p>
+              <p class="card-infos__title__date">créé le {{ formatDate(i.createdAt) }}</p>
+              <p class="card-infos__title__date" v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
           </div>
       </div>
     </div>
@@ -68,6 +68,11 @@ export default {
     },
   },
   methods: {
+    formatDate(e) {
+            const date = new Date(e);
+            const day = date.toLocaleDateString();
+            return day
+        },
     getOneTopic(event) {
       let userToken = userInLocalStorage.map(user => user.token);
       

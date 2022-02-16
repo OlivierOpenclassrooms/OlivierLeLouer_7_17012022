@@ -19,7 +19,7 @@
                                 </div>
                                 <div class="user__description">
                                     <p class='button-get user__description__name' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
-                                    <p class='user__description__create'>{{ item.createdAt }}</p>
+                                    <p class='user__description__create'>{{ formatDate(item.createdAt) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -54,8 +54,8 @@
                                 <div class="user-comment">
                                     <p class='button-get user__description__name' :userId="i.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
                                     <div class="card-infos__date">
-                                        <p class='user__description__create'>Posté le {{ i.createdAt }}</p>
-                                        <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ i.updatedAt }}</p>
+                                        <p class='user__description__create'>Posté le {{ formatDate(i.createdAt) }}</p>
+                                        <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
                                     </div>
                                     <div class="comment-content">
                                         <p>{{ i.content }}</p>
@@ -96,7 +96,6 @@ name: 'multitopic',
             },
         }
     },
-
     mounted() {
         if (userInLocalStorage == null) {
             this.$router.push('/');
@@ -114,7 +113,12 @@ name: 'multitopic',
     ...mapState({comment: 'commentInfos'}),
   },
     methods: {
-
+        formatDate(e) {
+            const date = new Date(e);
+            const day = date.toLocaleDateString();
+            const time = date.toLocaleTimeString();
+            return `${day} à ${time}`
+        },
         /*FUNCTIONS COMMENT*/
 
         createComment(event) {
