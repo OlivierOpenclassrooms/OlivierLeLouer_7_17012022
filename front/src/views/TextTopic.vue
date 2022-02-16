@@ -14,7 +14,7 @@
                         <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
                     </div>
                     <div class="card-infos__title" v-for="user in allUsers" :key="user">
-                        <p class="card-infos__title__user" v-if="item.userId == user.id">par {{ user.prenom }} {{ user.nom }}</p>
+                        <p class="card-infos__title__user" v-if="item.userId == user.id" @click="getOneUser" :userId="user.id">par {{ user.prenom }} {{ user.nom }}</p>
                         <div class="user-picture" v-if="item.userId == user.id">
                             <img v-if="user.imageUrl != null" :src="user.imageUrl"/>
                         </div>
@@ -22,11 +22,6 @@
                     <div class="card-infos__title">
                         <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
                         <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
-                    </div>
-                    <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
-                        <input type='text' v-model="dataTopic.title"/>
-                        <p class='button-modify buttons' @click="modifyTopic" :topicId="item.id">Modifier</p>
-                        <p class='button-delete buttons' @click="deleteTopic" :topicId="item.id">Supprimer</p>
                     </div>
                 </div>
             </div>
@@ -80,6 +75,9 @@ export default {
             const time = date.toLocaleTimeString();
             return `${day} à ${time}`
         },
+
+        /*TOPIC CRUD*/
+
         createTopic() {
             axios.post('http://localhost:3000/api/topic', {
                 title: this.dataTopic.title,
@@ -143,6 +141,20 @@ export default {
                 } }
             )
             .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
+            .catch(error => console.log(error));
+        },
+
+        /*USER*/
+
+        getOneUser(event) {
+            let userId = event.target.getAttribute("userId");
+
+            axios.get(`http://localhost:3000/api/auth/${userId}`, { 
+                headers: {
+                Authorization: "Bearer " + userToken
+                } }
+            )
+            .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
             .catch(error => console.log(error));
         },
     },
@@ -220,6 +232,9 @@ export default {
             text-decoration: underline;
             font-weight: bolder;
             font-size: 14px;
+            &:hover {
+                cursor: pointer;
+            }
         }
         &__date {
             font-style: italic;
