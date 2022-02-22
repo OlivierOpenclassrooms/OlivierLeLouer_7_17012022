@@ -8,14 +8,14 @@
       <div class="form-infos">
         <div class="picture">
           <label for="file" class="label-file">Choisir une image</label>
-          <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
+          <input class="input-file" ref="file" id="file" name="file" @change="selectFile" type="file"/>
           <p class="form__button" @click="editUserPicture">Modifier la photo de profil</p>
         </div>
         <div class="user">
-          <input class="user__input-infos" type="email" v-model="dataEdit.email" placeholder='Entrer email' />
-          <input class="user__input-infos" type="text" v-model="dataEdit.prenom" placeholder='Entrer prénom' />
+          <input class="user__input-infos" type="email" v-model="dataEdit.email" placeholder='Entrer email'/>
+          <input class="user__input-infos" type="text" v-model="dataEdit.prenom" placeholder='Entrer prénom'/>
           <input class="user__input-infos" type="text" v-model="dataEdit.nom" placeholder='Entrer nom' />
-          <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste" />
+          <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste"/>
           <textarea class="user__input-infos" type="text" v-model="dataEdit.biographie" placeholder="Biographie"></textarea>
           <p class="user__button" @click="editUser">Modifier les informations</p>
         </div>
@@ -97,7 +97,7 @@ export default {
       })
       .then(response => {  
         console.log(response), 
-        this.$router.go() 
+        this.$store.dispatch('getUserInfos'); 
       })
       .catch(error => { console.log(error) })
     },
@@ -116,7 +116,7 @@ export default {
         })
         .then(response => {  
           console.log(response), 
-          this.$router.go() 
+          this.$store.dispatch('getUserInfos');
         })
         .catch(error => { console.log(error) })
 
@@ -140,7 +140,7 @@ export default {
       })
       .then(response => {  
         console.log(response), 
-        this.$router.go() 
+        this.$store.dispatch('getUserInfos') 
       })
       .catch(error => { console.log(error) })
     },
@@ -194,11 +194,6 @@ export default {
   width: 50%;
   align-items: center;
   justify-content: center;
-  &__input-picture {
-    width: 50%;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
 }
 
 .user {

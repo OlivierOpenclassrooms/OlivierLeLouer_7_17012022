@@ -5,14 +5,16 @@
                 <h1>Mur :</h1>
             </div>
             <div class="card-create">
-                <input type='text' v-model="dataPost.title" placeholder="Description"/>
-                <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-                <p class="button-create" @click="createPost">Poster</p>
+                <form class="card-create__form" @submit.prevent="createPost">
+                    <input class="card-create__form__description input-border" type='text' name="post" placeholder="Description"/>
+                    <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
+                    <input type="submit" class="button-create input-border" value="Poster"/>
+                </form>
             </div>
             <div class="card" v-for="item in post" :key="item">
                 <div class="card-post">
                     <div v-for="allUsers in allUsers" :key="allUsers">
-                        <div class="post__user" v-if="item.userId == allUsers.id">
+                        <div class="card-post__user" v-if="item.userId == allUsers.id">
                             <div class="user">
                                 <div v-if="allUsers.imageUrl != null">
                                     <img class="user__image" :src="allUsers.imageUrl"/>
@@ -21,6 +23,13 @@
                                     <p class='button-get user__description__name' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
                                     <p class='user__description__create'>{{ formatDate(item.createdAt) }}</p>
                                 </div>
+                            </div>
+                            <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
+                                <form class="form-modify" @submit.prevent="modifyPostDescription" :postId="item.id">
+                                    <input class="form-modify__description" type='text' name="post" placeholder="Entrer modification"/>
+                                    <input type="submit" class="button-comment" value="Modifier"/>
+                                </form>
+                                <i class="fa-solid fa-trash-can" @click="deletePost" :postId="item.id"></i>
                             </div>
                         </div>
                     </div>
@@ -32,33 +41,41 @@
                             <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
                         </div>
                     </div>
-                    <div class="create-comment">
-                        <input type='text' v-model="commentData.content" placeholder="Ecrire un commentaire"/>
-                        <p class="button-create" :postId="item.id" @click="createComment">Répondre</p>
-                    </div>
                     <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
-                        <input type='text' v-model="dataPost.title"/>
-                        <p class='button-modify buttons' @click="modifyPostDescription" :postId="item.id">Modifier description</p>
                         <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-                        <p class='button-modify buttons' @click="modifyPostPicture" :postId="item.id">Modifier image</p>
-                        <p class='button-delete buttons' @click="deletePost" :postId="item.id">Supprimer</p>
+                        <button class='button-comment' @click="modifyPostPicture" :postId="item.id">Modifier image</button>
+                    </div>
+                    <div class="card-create">
+                        <form class="card-create__form" @submit.prevent="createComment" :postId="item.id">
+                            <input class="card-create__form__description" type='text' name="commentaire" placeholder="Ecrire un commentaire"/>
+                            <input type="submit" class="button-create" value="Répondre"/>
+                        </form>
                     </div>
                 </div>
-                <div class="container-comment" v-for="i in comment" :key="i">
-                    <div v-if="item.id == i.postId">
-                        <div class="card-comment" v-for="allUsers in allUsers" :key="allUsers">
-                            <div class="card-comment__user" v-if="i.userId == allUsers.id">
-                                <div v-if="allUsers.imageUrl != null">
-                                    <img class="user__image" :src="allUsers.imageUrl"/>
-                                </div>
-                                <div class="user-comment">
-                                    <p class='button-get user__description__name' :userId="i.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
-                                    <div class="card-infos__date">
-                                        <p class='user__description__create'>Posté le {{ formatDate(i.createdAt) }}</p>
-                                        <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
+                <div class="scroller">
+                    <div class="container-comment" v-for="i in comment" :key="i">
+                        <div v-if="item.id == i.postId">
+                            <div class="card-comment" v-for="allUsers in allUsers" :key="allUsers">
+                                <div class="card-comment__user" v-if="i.userId == allUsers.id">
+                                    <div v-if="allUsers.imageUrl != null">
+                                        <img class="user__image" :src="allUsers.imageUrl"/>
                                     </div>
-                                    <div class="comment-content">
-                                        <p>{{ i.content }}</p>
+                                    <div class="user-comment">
+                                        <p class='button-get user__description__name' :userId="i.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                                        <div class="card-infos__date">
+                                            <p class='user__description__create'>Posté le {{ formatDate(i.createdAt) }}</p>
+                                            <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
+                                        </div>
+                                        <div class="comment-content">
+                                            <p>{{ i.content }}</p>
+                                        </div>
+                                        <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
+                                            <form class="form-modify" @submit.prevent="modifyComment" :commentId="i.id">
+                                                <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
+                                                <input type="submit" class="button-comment" value="Modifier"/>
+                                            </form>
+                                            <button class='button-comment' @click="deleteComment" :commentId="i.id">Supprimer</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -117,38 +134,41 @@ name: 'multitopic',
             const date = new Date(e);
             const day = date.toLocaleDateString();
             const time = date.toLocaleTimeString();
-            return `${day} à ${time}`
+            return `le ${day} à ${time}`
         },
         /*FUNCTIONS COMMENT*/
 
         createComment(event) {
             const postId = event.target.getAttribute("postId");
-            console.log(postId)
-            
-            axios.post('http://localhost:3000/api/comment', {
-                content: this.commentData.content,
-                postId: postId,
-                userId: this.commentData.userId
-            }, { 
-                headers: {
-                Authorization: "Bearer " + userToken
-                }
-        })
-            .then( response => { console.log(response), this.$router.go() })
-            .catch(error => {console.log(error) })
+            const content = event.target.elements.commentaire.value;
+
+            if(content != null) {
+                axios.post('http://localhost:3000/api/comment', {
+                    content: content,
+                    postId: postId,
+                    userId: this.commentData.userId
+                    }, { 
+                    headers: {
+                    Authorization: "Bearer " + userToken
+                    }
+                })
+                .then( response => { console.log(response), this.$store.dispatch('getAllComments'), content == null })
+                .catch(error => {console.log(error) })
+            }
         },
         modifyComment(event){
             let commentId = event.target.getAttribute("commentId");
+            const content = event.target.elements.commentaire.value;
 
             axios.put(`http://localhost:3000/api/comment/${commentId}`, {
-                content: this.commentData.content,
+                content: content,
                 userIdOrder: this.commentData.userId
             }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then((response) => { console.log(response), this.$router.go() })
+            .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
             .catch(error => console.log(error));
         },
         deleteComment(event) {
@@ -162,7 +182,7 @@ name: 'multitopic',
                 }
             })
             .then((response) => {
-                console.log(response), this.$router.go()
+                console.log(response), this.$store.dispatch('getAllComments')
                 })
             .catch(error => console.log(error));
         },
@@ -187,10 +207,11 @@ name: 'multitopic',
             this.dataPost.image = e.target.files[0] || e.dataTransfer.files;
         },
 
-        createPost() {
+        createPost(event) {
+            const title = event.target.elements.post.value;
             const formData = new FormData();
             formData.append("image", this.dataPost.image);
-            formData.append("title", this.dataPost.title);
+            formData.append("title", title);
             formData.append("userId", this.dataPost.userId);
             console.log("test récup", formData.get("image"));
 
@@ -199,7 +220,7 @@ name: 'multitopic',
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then( response => { console.log(response), this.$router.go()})
+            .then( response => { console.log(response), this.$store.dispatch('getAllPosts')})
             .catch(error => {console.log(error)})
         },
         deletePost(event) {
@@ -213,7 +234,7 @@ name: 'multitopic',
                 },
             })
             .then((response) => {
-                console.log(response), this.$router.go()
+                console.log(response), this.$store.dispatch('getAllPosts')
             })
             .catch(error => 
                 console.log(error)
@@ -221,16 +242,17 @@ name: 'multitopic',
         },
         modifyPostDescription(event){
             let postId = event.target.getAttribute("postId");
+            let title = event.target.elements.post.value;
 
             axios.put(`http://localhost:3000/api/post/${postId}`, {
-                title: this.dataPost.title,
+                title: title,
                 userIdOrder: this.dataPost.userId,
             }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then((response) => { console.log(response), this.$router.go() })
+            .then((response) => { console.log(response), this.$store.dispatch('getAllPosts') })
             .catch(error => console.log(error));
         },
         modifyPostPicture(event) {
@@ -248,7 +270,7 @@ name: 'multitopic',
             })
             .then(response => {  
                 console.log(response), 
-                this.$router.go() 
+                this.$store.dispatch('getAllPosts') 
             })
             .catch(error => { console.log(error) })
         },
@@ -264,38 +286,19 @@ name: 'multitopic',
 .container {
     display: flex;
     flex-direction: column;
+    width: 95%;
+    margin: auto;
     &__title {
         display: flex;
     }
 }
 
-.card-create {
-    display: flex;
-    flex-direction: row;
-    input {
-        width: 80%;
-        border-radius: 10px 0px 0px 10px;
-    }
+.input-border {
+    border-radius: 10px;
 }
 
-.button-create {
-    display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: red;
-      border-radius: 0px 10px 10px 0px;
-      font-weight: bold;
-      color: white;
-      height: 40px;
-      width:20%;
-      margin: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-      transition: all 400ms;
-      &:hover {
-        cursor: pointer;
-        filter: brightness(1.07);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
+.picture__input {
+    margin-left: 20px;
 }
 
 /* POST & COMMENT */
@@ -318,13 +321,19 @@ name: 'multitopic',
     display: flex;
     flex-direction: column;
     min-width: 100%;
+    margin-bottom: 15px;
+    &__user {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 .user {
     display:flex;
     flex-direction: row;
     align-items: center;
-    min-width: 100%;
+    min-width: 50%;
     padding-left: 2%;
     padding-top: 2%;
     &__image {
@@ -371,9 +380,9 @@ name: 'multitopic',
         width: 100%;
         border-top: solid 2px #f2f2f2;
         border-bottom: solid 2px #f2f2f2;
-        margin-bottom: 10px;
         align-content: center;
         justify-content: center;
+        margin-bottom: 10px;
         img {
             display: flex;
             object-fit: contain;
@@ -396,8 +405,18 @@ name: 'multitopic',
 }
 
 /* COMMENT */
-.container-comment {
+
+.scroller {
+    display: flex;
+    overflow-y: scroll;
+    flex-direction: column;
     width: 100%;
+    transition: 1000ms;
+    max-height: 180px;
+    &:hover {
+        transition: 1000ms;
+        max-height: 500px;
+    }
 }
 
 .card-comment {
@@ -433,6 +452,27 @@ name: 'multitopic',
     flex-direction: row;
     p {
         text-align: left;
+    }
+}
+
+.container-buttons {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.post-buttons {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    margin-bottom: 0;
+    i {
+        margin-bottom: 10px;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    .form-modify {
+        margin: 0;
     }
 }
 

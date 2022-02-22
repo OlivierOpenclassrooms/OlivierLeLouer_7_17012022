@@ -23,9 +23,11 @@
                     <p v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
                 </div>
                 <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
-                    <input type='text' v-model="commentData.content"/>
-                    <p class='button-modify buttons' @click="modifyComment" :commentId="item.id">Modifier</p>
-                    <p class='button-delete buttons' @click="deleteComment" :commentId="item.id">Supprimer</p>
+                    <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
+                        <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
+                        <input type="submit" class="button-comment" value="Modifier"/>
+                    </form>
+                    <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
                 </div>
             </div>
             <div class="card-create">
@@ -99,21 +101,22 @@ export default {
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then( response => { console.log(response), this.$router.go() })
+            .then( response => { console.log(response), this.$store.dispatch('getAllComments') })
             .catch(error => {console.log(error) })
         },
         modifyComment(event){
             let commentId = event.target.getAttribute("commentId");
+            const content = event.target.elements.commentaire.value;
 
             axios.put(`http://localhost:3000/api/comment/${commentId}`, {
-                content: this.commentData.content,
+                content: content,
                 userIdOrder: this.commentData.userId
             }, { 
                 headers: {
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then((response) => { console.log(response), this.$router.go() })
+            .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
             .catch(error => console.log(error));
         },
         deleteComment(event) {
@@ -126,7 +129,7 @@ export default {
                     userIdOrder: this.commentData.userId,
                 }
             })
-            .then((response) => { console.log(response), this.$router.go() })
+            .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
             .catch(error => console.log(error));
         },
         getOneUser(event) {
@@ -148,6 +151,8 @@ export default {
 .container {
     display: flex;
     flex-direction: column;
+    margin: auto;
+    width: 95%;
     &__infos {
         display: flex;
         flex-direction: column;
@@ -221,26 +226,6 @@ export default {
             box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
         }
     }
-}
-
-.button-create {
-    display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: red;
-      border-radius: 10px;
-      font-weight: bold;
-      color: white;
-      height: 40px;
-      width:20%;
-      margin: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-      transition: all 400ms;
-      &:hover {
-        cursor: pointer;
-        filter: brightness(1.07);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
 }
 
 .button-get {

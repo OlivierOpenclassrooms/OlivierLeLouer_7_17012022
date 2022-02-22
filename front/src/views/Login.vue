@@ -89,6 +89,7 @@ export default {
             .then(response => {
                 this.saveUserInLocalStorage(response.data),
                 console.log(response),
+                this.$store.dispatch('getUserInfos'),
                 this.$router.push('Topic')
             })
             .catch(error => { console.log(error) })

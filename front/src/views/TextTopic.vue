@@ -5,8 +5,10 @@
                 <h1>Discussions :</h1>
             </div>
             <div class="card-create">
-                <input type='text' v-model="dataTopic.title" placeholder="Nom du topic"/>
-                <p class="button-create" @click="createTopic">Créer topic</p>
+                <form class="card-create__form" @submit.prevent="createTopic">
+                    <input class="card-create__form__description" type='text' name="topic" placeholder="Nom du topic"/>
+                    <input type="submit" class="button-create" value="Créer"/>
+                </form>
             </div>
             <div class="container__infos">
                 <div class="card-infos" v-for="item in topic" :key="item">
@@ -22,6 +24,13 @@
                     <div class="card-infos__title">
                         <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
                         <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
+                    </div>
+                    <div class="container-buttons" v-if="item.userId == user.id || user.isAdmin == true">
+                        <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
+                            <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
+                            <input type="submit" class="button-comment" value="Modifier"/>
+                        </form>
+                        <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
                     </div>
                 </div>
             </div>
@@ -78,9 +87,11 @@ export default {
 
         /*TOPIC CRUD*/
 
-        createTopic() {
+        createTopic(event) {
+            const title = event.target.elements.topic.value;
+
             axios.post('http://localhost:3000/api/topic', {
-                title: this.dataTopic.title,
+                title: title,
                 userId: this.dataTopic.userId,
                 userIdOrder: this.dataTopic.userId,
             }, { 
@@ -88,7 +99,7 @@ export default {
                 Authorization: "Bearer " + userToken
                 }
             })
-            .then( response => { console.log(response), this.$router.go()})
+            .then( response => { console.log(response), this.$store.dispatch('getAllTopics')})
             .catch(error => {console.log(error)})
         },
         deleteTopic(event) {
@@ -102,7 +113,7 @@ export default {
                 }
             })
             .then((response) => {
-                console.log(response), this.$router.go()
+                console.log(response), this.$store.dispatch('getAllTopics')
             })
             .catch(error => 
                 console.log(error)
@@ -129,7 +140,7 @@ export default {
                 Authorization: "Bearer " + userToken[0]
                 }
             })
-            .then((response) => { console.log(response), this.$router.go() })
+            .then((response) => { console.log(response), this.$store.dispatch('getAllTopics') })
             .catch(error => console.log(error));
         },
         getOneTopic(event) {
@@ -166,42 +177,19 @@ export default {
 .container {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    margin: auto;
     &__title {
         display: flex;
+        width: 100%;
     }
     &__infos {
         display: flex;
+        width: 100%;
         flex-direction: column;
     }
-}
-
-.card-create {
-    display: flex;
-    flex-direction: row;
-    input {
-        width: 80%;
-        border-radius: 10px 0px 0px 10px;
-    }
-}
-
-.button-create {
-    display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: red;
-      border-radius: 0px 10px 10px 0px;
-      font-weight: bold;
-      color: white;
-      height: 40px;
-      width:20%;
-      margin: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-      transition: all 400ms;
-      &:hover {
-        cursor: pointer;
-        filter: brightness(1.07);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
 }
 
 .card-infos {
@@ -254,6 +242,10 @@ export default {
         bottom: 0;
         margin: auto;
     }
+}
+
+.container-buttons {
+    justify-content: flex-start;
 }
 
 </style>

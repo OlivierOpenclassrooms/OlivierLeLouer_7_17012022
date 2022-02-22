@@ -7,7 +7,7 @@
       <div class="card-title">
         <h1 v-if="user.id == this.$route.params.id">Mon Profil</h1>
         <h1 v-else>Profil de {{ item.prenom }} {{ item.nom }}</h1>
-        <p class= "card-title__button" v-if="this.$route.params.id == user.id || user.isAdmin == true" @click="this.$router.push(`/editUser/${this.$route.params.id}`)">Modifier mon profil</p>
+        <p class= "card-title__button" v-if="this.$route.params.id == user.id || user.isAdmin == true" @click="this.$router.push(`/editUser/${this.$route.params.id}`)">Modifier profil</p>
       </div>
       <div class="container-user">
         <div class="container-user__card">
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <!--USER TOPICS-->
+    <!--USER CONTIBUTIONS-->
 
     <div class="container-contributions">
       <h2>Discussions</h2>
@@ -45,10 +45,9 @@
               <p class='button-delete buttons' @click="deleteTopic" :topicId="i.id">Supprimer</p>
           </div>
       </div>
-      
     </div>
 
-    <!--USER POSTS-->
+    <!--USER WALL-->
 
     <div class="container">
       <h2>Mur</h2>
@@ -330,7 +329,7 @@ export default {
 }
 
 /*******************/
-/******MUR**********/
+/******WALL*********/
 /*******************/
 
 .container {

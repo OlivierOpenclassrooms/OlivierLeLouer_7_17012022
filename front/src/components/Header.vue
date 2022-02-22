@@ -39,9 +39,11 @@ export default {
             mode: 'logout',
         }
     },
+
     methods : {
         deconnectUser() {
             localStorage.clear();
+            this.$store.dispatch('getUserInfos');
             this.$router.push('/');
         },
         getOneUser() {
