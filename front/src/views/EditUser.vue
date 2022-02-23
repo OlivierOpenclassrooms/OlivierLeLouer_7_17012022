@@ -34,12 +34,6 @@ import axios from 'axios';
 
 import { mapState } from 'vuex';
 
-let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-
-
-let userToken = userInLocalStorage.map(user => user.token);
-
 export default {
   name: "EditUser",
 
@@ -58,16 +52,19 @@ export default {
       },
       passwordCheck : {
         password: null,
-      }
+      },
+      userToken: this.$store.state.userToken[0],
     }
   },
 
   mounted() {
+    let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
     if (userInLocalStorage == null) {
-      this.$router.push('/')
+      this.$router.push('/');
     } else {
       this.$store.dispatch('getUserInfos');
+      this.$store.dispatch('getUserToken');
     } 
   },
 
@@ -92,7 +89,7 @@ export default {
         ...copy, 
         userIdOrder: this.dataEdit.userIdOrder
       }, { headers: {
-          Authorization: "Bearer " + userToken
+          Authorization: "Bearer " + this.userToken
         } 
       })
       .then(response => {  
@@ -111,7 +108,7 @@ export default {
           userIdOrder: this.dataEdit.userIdOrder
           }, { 
             headers: {
-            Authorization: "Bearer " + userToken
+            Authorization: "Bearer " + this.userToken
             } 
         })
         .then(response => {  
@@ -135,7 +132,7 @@ export default {
 
       axios.put(`http://localhost:3000/api/auth/image/${id}`, formData,
         { headers: {
-          Authorization: "Bearer " + userToken
+          Authorization: "Bearer " + this.userToken
         },
       })
       .then(response => {  
@@ -149,7 +146,7 @@ export default {
 
       axios.delete(`http://localhost:3000/api/auth/${id}`, { 
         headers: {
-          Authorization: "Bearer " + userToken
+          Authorization: "Bearer " + this.userToken
         }, 
         data: {
           userIdOrder: this.dataEdit.userIdOrder,

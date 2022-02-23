@@ -7,7 +7,7 @@
       <div class="card-title">
         <h1 v-if="user.id == this.$route.params.id">Mon Profil</h1>
         <h1 v-else>Profil de {{ item.prenom }} {{ item.nom }}</h1>
-        <p class= "card-title__button" v-if="this.$route.params.id == user.id || user.isAdmin == true" @click="this.$router.push(`/editUser/${this.$route.params.id}`)">Modifier profil</p>
+        <p class= "button-create" v-if="this.$route.params.id == user.id || user.isAdmin == true" @click="this.$router.push(`/editUser/${this.$route.params.id}`)">Modifier profil</p>
       </div>
       <div class="container-user">
         <div class="container-user__card">
@@ -117,39 +117,37 @@
 import { mapState } from 'vuex';
 import axios from 'axios';
 
-let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-let userToken = userInLocalStorage.map(user => user.token);
-
-let userId = userInLocalStorage.map(user => user.userId);
-
 export default {
   name: "User",
    data() {
       return {
-          dataTopic: {
-            title: null,
-            userId: userId[0],
-          },
-          commentData: {
-            content: null,
-          },
-          dataPost: {
-            title: null,
-            image: null,
-          },
-        }
+        dataTopic: {
+          title: null,
+          userId: this.$store.state.userInfos.id,
+        },
+        commentData: {
+          content: null,
+        },
+        dataPost: {
+          title: null,
+          image: null,
+        },
+        userToken: this.$store.state.userToken,
+      }
     },
   mounted() {
-        if (userInLocalStorage == null) {
-          this.$router.push('/')
-        } else {
-          this.$store.dispatch('getUserInfos');
-          this.$store.dispatch('getAllComments');
-          this.$store.dispatch('getAllUsers');
-          this.$store.dispatch('getAllTopics');
-          this.$store.dispatch('getAllPosts');
-        }
+    let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+    if (userInLocalStorage == null) {
+      this.$router.push('/')
+
+    } else {
+      this.$store.dispatch('getUserInfos');
+      this.$store.dispatch('getAllComments');
+      this.$store.dispatch('getAllUsers');
+      this.$store.dispatch('getAllTopics');
+      this.$store.dispatch('getAllPosts');
+    }
   },
   computed: {
     ...mapState({user: 'userInfos'}),
@@ -169,16 +167,16 @@ export default {
   },
   methods: {
     formatDate(e) {
-            const date = new Date(e);
-            const day = date.toLocaleDateString();
-            return day
-        },
+      const date = new Date(e);
+      const day = date.toLocaleDateString();
+      return day
+    },
     getOneTopic(event) {
       let topicId = event.target.getAttribute("topicId");
 
       axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
           headers: {
-          Authorization: "Bearer " + userToken
+          Authorization: "Bearer " + this.userToken
           } }
       )
       .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
@@ -188,11 +186,11 @@ export default {
       let topicId = event.target.getAttribute("topicId");
 
       axios.delete(`http://localhost:3000/api/topic/${topicId}`, { 
-          headers: {
-          Authorization: "Bearer " + userToken
-          }, data: {
-              userIdOrder: this.dataTopic.userId,
-          }
+        headers: {
+        Authorization: "Bearer " + this.userToken
+        }, data: {
+            userIdOrder: this.dataTopic.userId,
+        }
       })
       .then((response) => {
           console.log(response), this.$router.go()
@@ -205,12 +203,12 @@ export default {
       let topicId = event.target.getAttribute("topicId");
 
       axios.put(`http://localhost:3000/api/topic/${topicId}`, {
-          title: this.dataTopic.title,
-          userIdOrder: this.dataTopic.userId,
+        title: this.dataTopic.title,
+        userIdOrder: this.dataTopic.userId,
       }, { 
-          headers: {
-          Authorization: "Bearer " + userToken[0]
-          }
+        headers: {
+        Authorization: "Bearer " + this.userToken
+        }
       })
       .then((response) => { console.log(response), this.$router.go() })
       .catch(error => console.log(error));
@@ -233,23 +231,9 @@ export default {
   h1 {
     text-align: left;
   }
-  &__button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: red;
+  .button-create {
     border-radius: 10px;
-    font-weight: bold;
-    color: white;
-    height: 40px;
-    width:200px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    transition: all 400ms;
-    &:hover {
-      cursor: pointer;
-      filter: brightness(1.07);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
+    font-size: 15px;
   }
 }
 .container-user {

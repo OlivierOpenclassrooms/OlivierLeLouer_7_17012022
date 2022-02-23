@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export default createStore({
   state: {
+    userToken:[],
     allUsersInfos: [],
     userInfos: [],
     topicInfos: [],
@@ -12,6 +13,9 @@ export default createStore({
   mutations: {
     userInfos(state, userInfos) {
       state.userInfos = userInfos
+    },
+    userToken(state, userToken) {
+      state.userToken = userToken
     },
     allUsersInfos(state, allUsersInfos) {
       state.allUsersInfos = allUsersInfos
@@ -31,6 +35,7 @@ export default createStore({
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
       if (userInLocalStorage != null) {
+
         let userId = userInLocalStorage.map(user => user.userId);
 
         let userToken = userInLocalStorage.map(user => user.token);
@@ -40,9 +45,18 @@ export default createStore({
               Authorization: "Bearer " + userToken
             }
           })
-        .then(response => { this.commit('userInfos', response.data), console.log(response.data) })
+        .then(response => { this.commit('userInfos', response.data) })
         .catch(error => console.log(error));
       }
+    },
+    getUserToken() {
+      let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+        let userToken = userInLocalStorage.map(user => user.token);
+
+        this.commit('userToken', userToken);
+
+        console.log(userToken);
     },
     getAllTopics() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));

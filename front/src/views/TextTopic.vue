@@ -41,8 +41,6 @@ import axios from 'axios';
 import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-let userToken = userInLocalStorage.map(user => user.token);
-let userId = userInLocalStorage.map(user => user.userId);
 
 export default {
     
@@ -52,8 +50,9 @@ export default {
             dataTopic: {
                 title: null,
                 image: null,
-                userId: userId[0],
+                userId: this.$store.state.userInfos.id,
             },
+            userToken: this.$store.state.userToken,
         }
     },
 
@@ -61,6 +60,7 @@ export default {
         if (userInLocalStorage == null) {
             this.$router.push('/');
         } else {
+            this.$store.dispatch('getUserToken');
             this.$store.dispatch('getAllTopics');
             this.$store.dispatch('getAllUsers');
             this.$store.dispatch('getAllComments');
@@ -94,7 +94,7 @@ export default {
                 userIdOrder: this.dataTopic.userId,
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then( response => { console.log(response), this.$store.dispatch('getAllTopics')})
@@ -105,7 +105,7 @@ export default {
 
             axios.delete(`http://localhost:3000/api/topic/${topicId}`, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }, data: {
                     userIdOrder: this.dataTopic.userId,
                 }
@@ -127,15 +127,13 @@ export default {
             }
             let topicId = event.target.getAttribute("topicId");
 
-            console.log(userToken);
-
             axios.put(`http://localhost:3000/api/topic/${topicId}`, {
                 title: this.dataTopic.title,
                 description: this.dataTopic.description,
                 userIdOrder: this.dataTopic.userId,
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken[0]
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then((response) => { console.log(response), this.$store.dispatch('getAllTopics') })
@@ -146,7 +144,7 @@ export default {
 
             axios.get(`http://localhost:3000/api/topic/${topicId}`, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 } }
             )
             .then((response) => { console.log(response), this.$router.push(`/comment/${topicId}`) })
@@ -157,6 +155,8 @@ export default {
 
         getOneUser(event) {
             let userId = event.target.getAttribute("userId");
+
+            let userToken = userInLocalStorage.map(user => user.token);
 
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {

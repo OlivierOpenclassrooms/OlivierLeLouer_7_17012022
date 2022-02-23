@@ -89,12 +89,6 @@
 import axios from "axios";
 import { mapState } from 'vuex';
 
-let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
-let userToken = userInLocalStorage.map(user => user.token);
-
-let userId = userInLocalStorage.map(user => user.userId);
-
 export default {
 
 name: 'multitopic',
@@ -102,19 +96,23 @@ name: 'multitopic',
         return {
             commentData: {
                 content: null,
-                userId: userId[0],
+                userId: this.$store.state.userInfos.id,
             },
             dataPost: {
                 title: null,
                 image: null,
-                userId: userId[0],
+                userId: this.$store.state.userInfos.id,
             },
+            userToken: this.$store.state.userToken,
         }
     },
     mounted() {
+        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
         if (userInLocalStorage == null) {
             this.$router.push('/');
         } else {
+            this.$store.dispatch('getUserToken');
             this.$store.dispatch('getAllComments');
             this.$store.dispatch('getAllUsers');
             this.$store.dispatch('getUserInfos');
@@ -147,7 +145,7 @@ name: 'multitopic',
                     userId: this.commentData.userId
                     }, { 
                     headers: {
-                    Authorization: "Bearer " + userToken
+                    Authorization: "Bearer " + this.userToken
                     }
                 })
                 .then( response => { console.log(response), this.$store.dispatch('getAllComments'), content == null })
@@ -163,7 +161,7 @@ name: 'multitopic',
                 userIdOrder: this.commentData.userId
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
@@ -174,7 +172,7 @@ name: 'multitopic',
 
             axios.delete(`http://localhost:3000/api/comment/${commentId}`,{ 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }, data: {
                     userIdOrder: this.commentData.userId
                 }
@@ -189,6 +187,10 @@ name: 'multitopic',
 
         getOneUser(event) {
             let userId = event.target.getAttribute("userId");
+
+            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+            let userToken = userInLocalStorage.map(user => user.token);
 
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {
@@ -215,7 +217,7 @@ name: 'multitopic',
 
             axios.post('http://localhost:3000/api/post', formData, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then( response => { console.log(response), this.$store.dispatch('getAllPosts')})
@@ -226,7 +228,7 @@ name: 'multitopic',
 
             axios.delete(`http://localhost:3000/api/post/${postId}`,{ 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }, data: {
                     userIdOrder: this.dataPost.userId,
                 },
@@ -247,7 +249,7 @@ name: 'multitopic',
                 userIdOrder: this.dataPost.userId,
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then((response) => { console.log(response), this.$store.dispatch('getAllPosts') })
@@ -263,7 +265,7 @@ name: 'multitopic',
 
             axios.put(`http://localhost:3000/api/post/image/${postId}`, formData,
             { headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 },
             })
             .then(response => {  

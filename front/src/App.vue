@@ -1,19 +1,24 @@
 <template>
-    <div v-if="user.id != undefined" id="header">
+  <header>
+    <div v-if="user.id != undefined" class="header">
       <Header/>
     </div>
-    <main>
-        <router-view/>
-    </main>
+    <div v-else class="header">
+      <HeaderLog/>
+    </div>
+    <router-view/>
+  </header>
 </template>
 
 <script>
-import Header from "./components/Header.vue"
+import Header from "./components/Header.vue";
+import HeaderLog from "./components/HeaderLog.vue";
 import { mapState } from 'vuex';
 
 export default {
   components: {
-    Header
+    Header,
+    HeaderLog,
   },
   mounted() {
     this.$store.dispatch('getUserInfos');
@@ -26,6 +31,12 @@ export default {
 
 
 <style lang="scss">
+$button-color: red;
+
+:export {
+  button-color: $button-color;
+}
+
 html {
   margin: 0;
   padding:0;
@@ -52,7 +63,7 @@ main {
   height: 100%;
 }
 
-#header {
+.header {
   width: 100%;
   border-bottom: 3px solid rgb(233, 233, 233);
   background-color: white;
@@ -99,7 +110,7 @@ input:focus {
     display: flex;
       justify-content: center;
       align-items: center;
-      background-color: red;
+      background-color: $button-color;
       border-radius: 0px 10px 10px 0px;
       font-weight: bold;
       color: white;
@@ -109,6 +120,7 @@ input:focus {
       box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
       transition: all 400ms;
       border: none;
+      font-size: 15px;
       &:hover {
         cursor: pointer;
         filter: brightness(1.07);
@@ -148,5 +160,10 @@ input:focus {
 /*VERSION MOBILE ET TABLETTE*/ 
 /*****************************/
 
+@media only screen and (max-width: 768px) {
+    .button-create {
+        font-size: 12px;
+    }
+}
 
 </style>

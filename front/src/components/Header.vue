@@ -1,7 +1,7 @@
 <template>
     <header>
-        <div class="header">
-            <div class="header__icon">
+        <div class="mainHeader">
+            <div class="mainHeader__icon">
                 <img src="../assets/icon.svg" alt="Logo de Groupomania">
                 <p>Groupomania</p>
             </div>
@@ -34,17 +34,10 @@ import axios from 'axios';
 export default {
     name: "Header",
 
-    data() {
-        return {
-            mode: 'logout',
-        }
-    },
-
     methods : {
         deconnectUser() {
             localStorage.clear();
-            this.$store.dispatch('getUserInfos');
-            this.$router.push('/');
+            this.$router.go();
         },
         getOneUser() {
             let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
@@ -70,7 +63,7 @@ export default {
 
 <style lang="scss" scoped>
 
-.header {
+.mainHeader {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

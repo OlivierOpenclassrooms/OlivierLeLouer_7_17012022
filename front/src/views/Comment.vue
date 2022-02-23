@@ -1,39 +1,38 @@
 <template>
     <main>
-            <div v-for="i in topicInfos" :key="i">
-                <h1>{{ i.title }}</h1>
-            </div>
-            <div class="card-infos" v-for="item in commentInfos" :key="item">
-                <div v-for="allUsers in allUsers" :key="allUsers">
-                    <div class="card-infos__user" v-if="item.userId == allUsers.id">
-                        <div class="user">
-                            <div v-if="allUsers.imageUrl != null">
-                                <img class="user__image" :src="allUsers.imageUrl"/>
-                            </div>
-                            <p class='button-get' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+        <div v-for="i in topicInfos" :key="i">
+            <h1>{{ i.title }}</h1>
+        </div>
+        <div class="card-infos" v-for="item in commentInfos" :key="item">
+            <div v-for="allUsers in allUsers" :key="allUsers">
+                <div class="card-infos__user" v-if="item.userId == allUsers.id">
+                    <div class="user">
+                        <div v-if="allUsers.imageUrl != null">
+                            <img class="user__image" :src="allUsers.imageUrl"/>
                         </div>
+                        <p class='button-get' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
                     </div>
                 </div>
-                <div class="card-infos__content">
-                    <p>{{ item.content }}</p>
-                </div>
-                <div class="card-infos__date">
-                    <p>Posté le {{ formatDate(item.createdAt) }}</p>
-                    <p v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
-                </div>
-                <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
-                    <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
-                        <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
-                        <input type="submit" class="button-comment" @keyup.enter="submit" value="Modifier"/>
-                    </form>
-                    <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
-                </div>
             </div>
-            <div class="card-create">
-                <textarea type="text" placeholder="Ecrivez votre réponse ici" v-model="commentData.content"></textarea>
-                <p class="button-create" @click="createComment">Répondre</p>
+            <div class="card-infos__content">
+                <p>{{ item.content }}</p>
             </div>
-
+            <div class="card-infos__date">
+                <p>Posté le {{ formatDate(item.createdAt) }}</p>
+                <p v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
+            </div>
+            <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
+                <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
+                    <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
+                    <input type="submit" class="button-comment" value="Modifier"/>
+                </form>
+                <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
+            </div>
+        </div>
+        <div class="card-create">
+            <textarea type="text" placeholder="Ecrivez votre réponse ici" v-model="commentData.content"></textarea>
+            <p class="button-create" @click="createComment">Répondre</p>
+        </div>
     </main>
 </template>
 
@@ -43,24 +42,19 @@ import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
-let userId = userInLocalStorage.map(user => user.userId);
-
-let userToken = userInLocalStorage.map(user => user.token);
-
 export default {
     name: 'Comment',
     data() {
         return {
             commentData: {
                 content: null,
-                userId: userId[0],
-            }
+                userId: this.$store.state.userInfos.id,
+            },
+            userToken: this.$store.state.userToken[0],
         }
     },
 
     mounted() {
-        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-        
         if (userInLocalStorage == null) {
             this.$router.push('/')
         } else {
@@ -68,6 +62,7 @@ export default {
             this.$store.dispatch('getAllUsers');
             this.$store.dispatch('getUserInfos');
             this.$store.dispatch('getAllTopics');
+            this.$store.dispatch('getUserToken');
         }
     },
     computed: {
@@ -97,7 +92,7 @@ export default {
                 userId: this.commentData.userId
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then( response => { console.log(response), this.$store.dispatch('getAllComments') })
@@ -112,7 +107,7 @@ export default {
                 userIdOrder: this.commentData.userId
             }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }
             })
             .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
@@ -123,7 +118,7 @@ export default {
 
             axios.delete(`http://localhost:3000/api/comment/${commentId}`, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                Authorization: "Bearer " + this.userToken
                 }, data: {
                     userIdOrder: this.commentData.userId,
                 }
@@ -133,6 +128,8 @@ export default {
         },
         getOneUser(event) {
             let userId = event.target.getAttribute("userId");
+
+            let userToken = userInLocalStorage.map(user => user.token);
 
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {
