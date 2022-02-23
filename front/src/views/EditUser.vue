@@ -36,7 +36,7 @@ import { mapState } from 'vuex';
 
 let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
-let userId = userInLocalStorage.map(user => user.userId);
+
 
 let userToken = userInLocalStorage.map(user => user.token);
 
@@ -54,7 +54,7 @@ export default {
         password: null,
         image: null,
         isAdmin: null,
-        userIdOrder: userId[0],
+        userIdOrder: this.$store.state.userInfos.id,
       },
       passwordCheck : {
         password: null,
@@ -72,7 +72,7 @@ export default {
   },
 
   computed: {
-    ...mapState({user: 'userInfos'})
+    ...mapState({ user: 'userInfos' })
   },
 
   methods: {
@@ -171,12 +171,18 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  h1 {
+    text-align: left;
+  }
 }
 
 .container-edit {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
+
 .form-infos {
   display: flex;
   flex-wrap: wrap;
@@ -186,6 +192,7 @@ export default {
   border-radius: 10px;
   align-items: center;
   justify-content: space-between;
+  
 }
 
 .picture {
@@ -194,6 +201,12 @@ export default {
   width: 50%;
   align-items: center;
   justify-content: center;
+  label {
+    margin-bottom: 10px;
+  }
+  input {
+    margin-bottom: 10px;
+  }
 }
 
 .user {
@@ -266,6 +279,35 @@ export default {
 
 .form-space {
   margin-top: 30px;
+}
+
+/*****************************/
+/*VERSION MOBILE ET TABLETTE*/ 
+/*****************************/
+
+@media only screen and (max-width: 768px) {
+.picture {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.user {
+  width: 100%;
+  &__button {
+    width: 50%;
+    font-size: 15px;
+  }
+}
+
+.form {
+  &__input {
+    width: 100%;
+  }
+  &__button {
+    font-size: 15px;
+  }
+}
+
 }
 
 </style>

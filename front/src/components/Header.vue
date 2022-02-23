@@ -103,7 +103,8 @@ export default {
     &__card {
         display: flex;
         flex-direction: column;
-        width: 20%;
+        justify-content: space-between;
+        margin-right: 18px;
         &:hover {
             color: red;
             cursor: pointer;
@@ -111,4 +112,21 @@ export default {
     }
 }
 
+/*****************************/
+/*VERSION MOBILE ET TABLETTE*/ 
+/*****************************/
+
+@media only screen and (max-width: 768px) {
+    .header {
+        &__icon {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    .nav {
+        width: 100%;
+        margin-left: 17px;
+        flex-wrap: wrap;
+    }
+}
 </style>

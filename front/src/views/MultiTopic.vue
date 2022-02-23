@@ -1,81 +1,79 @@
 <template>
     <main>
-        <div class="container">
-            <div class="container__title">
-                <h1>Mur :</h1>
-            </div>
-            <div class="card-create">
-                <form class="card-create__form" @submit.prevent="createPost">
-                    <input class="card-create__form__description input-border" type='text' name="post" placeholder="Description"/>
+        <div class="container__title">
+            <h1>Mur :</h1>
+        </div>
+        <div class="card-create">
+            <form class="card-create__form" @submit.prevent="createPost">
+                <input class="card-create__form__description input-border" type='text' name="post" placeholder="Description"/>
+                <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
+                <input type="submit" class="button-create input-border" value="Publier"/>
+            </form>
+        </div>
+        <div class="card" v-for="item in post" :key="item">
+            <div class="card-post">
+                <div v-for="allUsers in allUsers" :key="allUsers">
+                    <div class="card-post__user" v-if="item.userId == allUsers.id">
+                        <div class="user">
+                            <div v-if="allUsers.imageUrl != null">
+                                <img class="user__image" :src="allUsers.imageUrl"/>
+                            </div>
+                            <div class="user__description">
+                                <p class='button-get user__description__name' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                                <p class='user__description__create'>{{ formatDate(item.createdAt) }}</p>
+                            </div>
+                        </div>
+                        <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
+                            <form class="form-modify" @submit.prevent="modifyPostDescription" :postId="item.id">
+                                <input class="form-modify__description" type='text' name="post" placeholder="Entrer modification"/>
+                                <input type="submit" class="button-comment" value="Modifier"/>
+                            </form>
+                            <i class="fa-solid fa-trash-can" @click="deletePost" :postId="item.id"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="post">
+                    <div class="post__description">
+                        <p>{{ item.title }}</p>
+                    </div>
+                    <div class="post__picture">
+                        <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
+                    </div>
+                </div>
+                <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
                     <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-                    <input type="submit" class="button-create input-border" value="Poster"/>
-                </form>
+                    <button class='button-comment' @click="modifyPostPicture" :postId="item.id">Modifier image</button>
+                </div>
+                <div class="card-create">
+                    <form class="card-create__form" @submit.prevent="createComment" :postId="item.id">
+                        <input class="card-create__form__description" type='text' name="commentaire" placeholder="Ecrire un commentaire"/>
+                        <input class="card-create__form__hidden" type="submit" @keyup.enter="submit"/>
+                    </form>
+                </div>
             </div>
-            <div class="card" v-for="item in post" :key="item">
-                <div class="card-post">
-                    <div v-for="allUsers in allUsers" :key="allUsers">
-                        <div class="card-post__user" v-if="item.userId == allUsers.id">
-                            <div class="user">
+            <div class="scroller">
+                <div class="container-comment" v-for="i in comment" :key="i">
+                    <div v-if="item.id == i.postId">
+                        <div class="card-comment" v-for="allUsers in allUsers" :key="allUsers">
+                            <div class="card-comment__user" v-if="i.userId == allUsers.id">
                                 <div v-if="allUsers.imageUrl != null">
                                     <img class="user__image" :src="allUsers.imageUrl"/>
                                 </div>
-                                <div class="user__description">
-                                    <p class='button-get user__description__name' :userId="item.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
-                                    <p class='user__description__create'>{{ formatDate(item.createdAt) }}</p>
-                                </div>
-                            </div>
-                            <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
-                                <form class="form-modify" @submit.prevent="modifyPostDescription" :postId="item.id">
-                                    <input class="form-modify__description" type='text' name="post" placeholder="Entrer modification"/>
-                                    <input type="submit" class="button-comment" value="Modifier"/>
-                                </form>
-                                <i class="fa-solid fa-trash-can" @click="deletePost" :postId="item.id"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post">
-                        <div class="post__description">
-                            <p>{{ item.title }}</p>
-                        </div>
-                        <div class="post__picture">
-                            <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
-                        </div>
-                    </div>
-                    <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
-                        <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-                        <button class='button-comment' @click="modifyPostPicture" :postId="item.id">Modifier image</button>
-                    </div>
-                    <div class="card-create">
-                        <form class="card-create__form" @submit.prevent="createComment" :postId="item.id">
-                            <input class="card-create__form__description" type='text' name="commentaire" placeholder="Ecrire un commentaire"/>
-                            <input type="submit" class="button-create" value="Répondre"/>
-                        </form>
-                    </div>
-                </div>
-                <div class="scroller">
-                    <div class="container-comment" v-for="i in comment" :key="i">
-                        <div v-if="item.id == i.postId">
-                            <div class="card-comment" v-for="allUsers in allUsers" :key="allUsers">
-                                <div class="card-comment__user" v-if="i.userId == allUsers.id">
-                                    <div v-if="allUsers.imageUrl != null">
-                                        <img class="user__image" :src="allUsers.imageUrl"/>
+                                <div class="user-comment">
+                                    <p class='button-get user__description__name' :userId="i.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
+                                    <div class="card-infos__date">
+                                        <p class='user__description__create'>Posté le {{ formatDate(i.createdAt) }}</p>
+                                        <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
                                     </div>
-                                    <div class="user-comment">
-                                        <p class='button-get user__description__name' :userId="i.userId" @click="getOneUser" v-if="allUsers.prenom != null">{{ allUsers.prenom }} {{ allUsers.nom }}</p>
-                                        <div class="card-infos__date">
-                                            <p class='user__description__create'>Posté le {{ formatDate(i.createdAt) }}</p>
-                                            <p class='user__description__create' v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
-                                        </div>
-                                        <div class="comment-content">
-                                            <p>{{ i.content }}</p>
-                                        </div>
-                                        <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
-                                            <form class="form-modify" @submit.prevent="modifyComment" :commentId="i.id">
-                                                <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
-                                                <input type="submit" class="button-comment" value="Modifier"/>
-                                            </form>
-                                            <button class='button-comment' @click="deleteComment" :commentId="i.id">Supprimer</button>
-                                        </div>
+                                    <div class="comment-content">
+                                        <p>{{ i.content }}</p>
+                                    </div>
+                                    <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
+                                        <form class="form-modify" @submit.prevent="modifyComment" :commentId="i.id">
+                                            <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
+                                            <input type="submit" class="button-comment" value="Modifier"/>
+                                        </form>
+                                        <button class='button-comment' @click="deleteComment" :commentId="i.id">Supprimer</button>
                                     </div>
                                 </div>
                             </div>
@@ -284,12 +282,10 @@ name: 'multitopic',
 /*EN TETE PAGE*/
 
 .container {
-    display: flex;
-    flex-direction: column;
-    width: 95%;
-    margin: auto;
     &__title {
         display: flex;
+        flex-direction: row;
+        width: 100%;
     }
 }
 
@@ -307,7 +303,7 @@ name: 'multitopic',
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 80%;
+    min-width: 96%;
     padding: 2%;
     margin-bottom: 30px;
     border: solid 2px #f2f2f2;
@@ -361,6 +357,7 @@ name: 'multitopic',
         &__create {
             font-style: italic;
             font-size: 10px;
+            text-align: left;
         }
     }
 }
@@ -391,20 +388,19 @@ name: 'multitopic',
     }
 }
 
-.create-comment {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 10px;
-    input {
-        width: 75%;
-        border-radius: 10px 0px 0px 10px;
+/* COMMENT */
+
+.card-create {
+    &__form {
+        &__hidden {
+            display: none;
+        }
+        &__description {
+            width: 100%;
+            border-radius: 10px;
+        }
     }
 }
-
-/* COMMENT */
 
 .scroller {
     display: flex;
@@ -426,12 +422,12 @@ name: 'multitopic',
     align-items: flex-start;
     justify-content: center;
     margin-bottom: 1px;
-}
-.card-comment__user {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    &__user {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
 }
 .user-comment {
     display: flex;

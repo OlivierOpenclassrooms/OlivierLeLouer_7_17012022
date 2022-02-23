@@ -1,37 +1,35 @@
 <template>
     <main>
-        <div class="container">
-            <div class="container__title">
-                <h1>Discussions :</h1>
-            </div>
-            <div class="card-create">
-                <form class="card-create__form" @submit.prevent="createTopic">
-                    <input class="card-create__form__description" type='text' name="topic" placeholder="Nom du topic"/>
-                    <input type="submit" class="button-create" value="Créer"/>
-                </form>
-            </div>
-            <div class="container__infos">
-                <div class="card-infos" v-for="item in topic" :key="item">
-                    <div class="card-infos__title">
-                        <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
+        <div class="container__title">
+            <h1>Discussions :</h1>
+        </div>
+        <div class="card-create">
+            <form class="card-create__form" @submit.prevent="createTopic">
+                <input class="card-create__form__description" type='text' name="topic" placeholder="Nom du topic"/>
+                <input type="submit" class="button-create" value="Créer"/>
+            </form>
+        </div>
+        <div class="container__infos">
+            <div class="card-infos" v-for="item in topic" :key="item">
+                <div class="card-infos__title">
+                    <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
+                </div>
+                <div class="card-infos__title" v-for="user in allUsers" :key="user">
+                    <p class="card-infos__title__user" v-if="item.userId == user.id" @click="getOneUser" :userId="user.id">par {{ user.prenom }} {{ user.nom }}</p>
+                    <div class="user-picture" v-if="item.userId == user.id">
+                        <img v-if="user.imageUrl != null" :src="user.imageUrl"/>
                     </div>
-                    <div class="card-infos__title" v-for="user in allUsers" :key="user">
-                        <p class="card-infos__title__user" v-if="item.userId == user.id" @click="getOneUser" :userId="user.id">par {{ user.prenom }} {{ user.nom }}</p>
-                        <div class="user-picture" v-if="item.userId == user.id">
-                            <img v-if="user.imageUrl != null" :src="user.imageUrl"/>
-                        </div>
-                    </div>
-                    <div class="card-infos__title">
-                        <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
-                        <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
-                    </div>
-                    <div class="container-buttons" v-if="item.userId == user.id || user.isAdmin == true">
-                        <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
-                            <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
-                            <input type="submit" class="button-comment" value="Modifier"/>
-                        </form>
-                        <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
-                    </div>
+                </div>
+                <div class="card-infos__title">
+                    <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
+                    <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
+                </div>
+                <div class="container-buttons" v-if="item.userId == user.id || user.isAdmin == true">
+                    <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
+                        <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
+                        <input type="submit" class="button-comment" value="Modifier"/>
+                    </form>
+                    <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
                 </div>
             </div>
         </div>
@@ -175,12 +173,6 @@ export default {
 <style lang="scss" scoped>
 
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 95%;
-    margin: auto;
     &__title {
         display: flex;
         width: 100%;
@@ -226,6 +218,7 @@ export default {
         }
         &__date {
             font-style: italic;
+            font-size: 12px;
         }
     }
 }
@@ -246,6 +239,19 @@ export default {
 
 .container-buttons {
     justify-content: flex-start;
+}
+
+/*****************************/
+/*VERSION MOBILE ET TABLETTE**/ 
+/*****************************/
+
+@media only screen and (max-width: 768px) {
+    .user-picture {
+        img {
+            height: 75px;
+            width: 75px;
+        }
+    }
 }
 
 </style>

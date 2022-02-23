@@ -1,21 +1,26 @@
 <template>
-    <div id="header">
+    <div v-if="user.id != undefined" id="header">
       <Header/>
     </div>
     <main>
-      <div id="page-container">
         <router-view/>
-      </div>
     </main>
 </template>
 
 <script>
 import Header from "./components/Header.vue"
+import { mapState } from 'vuex';
 
 export default {
   components: {
     Header
-  }
+  },
+  mounted() {
+    this.$store.dispatch('getUserInfos');
+  },
+  computed: {
+    ...mapState({user: 'userInfos'}),
+  },
 };
 </script>
 
@@ -29,6 +34,12 @@ html {
 .general-color { 
   margin : 0px;
   padding : 0px;
+}
+
+main {
+  max-width: 1024px;
+  width: 95%;
+  margin: auto;
 }
 
 #app {
@@ -45,11 +56,6 @@ html {
   width: 100%;
   border-bottom: 3px solid rgb(233, 233, 233);
   background-color: white;
-}
-
-#page-container {
-  max-width: 1024px;
-  margin: auto;
 }
 
 /*GENERAL FORM*/
@@ -76,6 +82,15 @@ html {
 
 input:focus {
   outline: none;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    margin: auto;
 }
 
 /*GENERAL BUTTON CREATE*/
@@ -127,5 +142,11 @@ input:focus {
         cursor: pointer;
     }
 }
+
+
+/*****************************/
+/*VERSION MOBILE ET TABLETTE*/ 
+/*****************************/
+
 
 </style>

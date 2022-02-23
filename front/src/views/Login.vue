@@ -1,22 +1,22 @@
 <template>
     <main>
-            <div class='card'>
-                <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
-                <h1 class='card__title' v-else>Inscription</h1>
-                <div class= 'form'>
-                    <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
-                    <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
-                </div>
-                <div class= 'form' v-if='mode== "signUp"'>
-                    <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
-                    <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
-                </div>
-                <button @click.prevent="login" @click="reload" v-if="mode == 'login'">S'identifier</button>
-                <button @click.prevent="signUp" @click="reload" v-else>S'inscrire</button>
-                <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
-                <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
+        <div class='card'>
+            <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
+            <h1 class='card__title' v-else>Inscription</h1>
+            <div class= 'form'>
+                <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
+                <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
             </div>
-        <router-view/>
+            <div class= 'form' v-if='mode== "signUp"'>
+                <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
+                <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
+            </div>
+            <button @click.prevent="login" @click="reload" v-if="mode == 'login'">S'identifier</button>
+            <button @click.prevent="signUp" @click="reload" v-else>S'inscrire</button>
+            <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
+            <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
+        </div>
+    <router-view/>
     </main>
 </template>
 
@@ -76,7 +76,7 @@ export default {
                 email: this.dataLogin.email,
                 password: this.dataLogin.password,
             })
-            .then(response => { this.saveUserInLocalStorage(response.data), console.log(response), this.$router.push('Topic') })
+            .then(response => { this.saveUserInLocalStorage(response.data), console.log(response), this.$router.go() })
             .catch(error => { console.log(error, error.response), alert("Mauvais identifiant ou mot de passe") })
         },
         signUp() {
@@ -155,4 +155,15 @@ export default {
     left: 0;
     bottom: 0;
 }
+
+/*****************************/
+/*VERSION MOBILE ET TABLETTE**/ 
+/*****************************/
+
+@media only screen and (max-width: 768px) {
+    .card {
+        width: 75%;
+    }
+}
+
 </style>

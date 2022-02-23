@@ -10,6 +10,7 @@
                 <h2>Viens poser tes questions ou simplement discuter avec tes collègues sur ce forum !</h2>
             </div>
         </div>
+        <router-view/>
     </main>
 </template>
 
@@ -32,6 +33,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    width: 100%;
     &__card {
         display: flex;
         flex-direction: column;
@@ -52,4 +54,20 @@ export default {
         }
     }
 }
+
+/*****************************/
+/*VERSION MOBILE ET TABLETTE**/ 
+/*****************************/
+
+@media only screen and (max-width: 480px) {
+    .container-topic {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        &__card {
+            width: 90%;
+        }
+    }
+}
+
 </style>

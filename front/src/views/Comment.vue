@@ -1,6 +1,5 @@
 <template>
     <main>
-        <div class="container">
             <div v-for="i in topicInfos" :key="i">
                 <h1>{{ i.title }}</h1>
             </div>
@@ -25,7 +24,7 @@
                 <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
                     <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
                         <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
-                        <input type="submit" class="button-comment" value="Modifier"/>
+                        <input type="submit" class="button-comment" @keyup.enter="submit" value="Modifier"/>
                     </form>
                     <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
                 </div>
@@ -34,7 +33,7 @@
                 <textarea type="text" placeholder="Ecrivez votre réponse ici" v-model="commentData.content"></textarea>
                 <p class="button-create" @click="createComment">Répondre</p>
             </div>
-        </div>
+
     </main>
 </template>
 
@@ -149,10 +148,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    width: 95%;
     &__infos {
         display: flex;
         flex-direction: column;
@@ -166,6 +161,7 @@ export default {
     border-radius: 5px;
     border: solid #f2f2f2 2px;
     padding: 2%;
+    width: 96%;
     &__user {
         display: flex;
         flex-direction: row;
@@ -183,6 +179,7 @@ export default {
     }
     &__date {
         display: flex;
+        text-align: left;
         p {
         font-style: italic;
         font-size: 10px;
@@ -196,10 +193,15 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    width: 100%;
     textarea {
         width: 100%;
         text-decoration: none;
         margin-bottom: 10px;
+    }
+    .button-create {
+        border-radius: 10px;
     }
 }
 
@@ -247,6 +249,16 @@ export default {
         object-fit: cover;
         border-radius: 50%;
         margin-right: 20px;
+    }
+}
+
+/*****************************/
+/*VERSION MOBILE ET TABLETTE*/ 
+/*****************************/
+
+@media only screen and (max-width: 768px) {
+    .button-create {
+        width:30%;
     }
 }
 </style>
