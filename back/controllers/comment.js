@@ -39,9 +39,8 @@ exports.getAllComments = (req, res) => {
       .then(data => {
         res.send(data);
       })
-      .catch(err => {
-        res.status(500).send({ error
-        });
+      .catch(error => {
+        res.status(500).send({ error });
       });
   };
 

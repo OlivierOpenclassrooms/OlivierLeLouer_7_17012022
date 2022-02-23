@@ -2,14 +2,14 @@
   <main>
     <div class="title">
       <h1>Modifier le compte</h1>
-      <p class="form__button delete-button" @click="deleteUser">Supprimer le compte</p>
+      <p class="form__button delete-button button-create" @click="deleteUser">Supprimer le compte</p>
     </div>
     <div class="container-edit">
       <div class="form-infos">
         <div class="picture">
           <label for="file" class="label-file">Choisir une image</label>
           <input class="input-file" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-          <p class="form__button" @click="editUserPicture">Modifier la photo de profil</p>
+          <p class="form__button button-create" @click="editUserPicture">Modifier la photo de profil</p>
         </div>
         <div class="user">
           <input class="user__input-infos" type="email" v-model="dataEdit.email" placeholder='Entrer email'/>
@@ -17,13 +17,13 @@
           <input class="user__input-infos" type="text" v-model="dataEdit.nom" placeholder='Entrer nom' />
           <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste"/>
           <textarea class="user__input-infos" type="text" v-model="dataEdit.biographie" placeholder="Biographie"></textarea>
-          <p class="user__button" @click="editUser">Modifier les informations</p>
+          <p class="user__button button-create" @click="editUser">Modifier les informations</p>
         </div>
       </div>
       <div class="form form-space">
         <input class="form__input" type="password" v-model="passwordCheck.password" placeholder="Nouveau mot de passe"/>
         <input class="form__input" type="password" v-model="dataEdit.password" placeholder="Saisissez une seconde fois le nouveau mot de passe"/>
-        <p class="form__button" @click="editUserPassword">Modifier le mot de passe</p>
+        <p class="form__button button-create" @click="editUserPassword">Modifier le mot de passe</p>
       </div>
     </div>
   </main>
@@ -53,7 +53,7 @@ export default {
       passwordCheck : {
         password: null,
       },
-      userToken: this.$store.state.userToken[0],
+      userToken: this.$store.state.userToken,
     }
   },
 
@@ -172,6 +172,9 @@ export default {
   h1 {
     text-align: left;
   }
+  .delete-button {
+    width: 25%;
+  }
 }
 
 .container-edit {
@@ -217,23 +220,8 @@ export default {
     margin-bottom: 20px;
   }
   &__button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: red;
-    border-radius: 10px;
-    font-weight: bold;
-    color: white;
-    height: 40px;
     width:100%;
-    margin: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    transition: all 400ms;
-    &:hover {
-      cursor: pointer;
-      filter: brightness(1.07);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-    }
+    border-radius: 10px;
   }
 }
 
@@ -250,28 +238,9 @@ export default {
     margin-bottom: 20px;
   }
   &__button {
-    display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: red;
-      border-radius: 10px;
-      font-weight: bold;
-      color: white;
-      height: 40px;
       width:50%;
-      margin: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-      transition: all 400ms;
-      &:hover {
-        cursor: pointer;
-        filter: brightness(1.07);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
+      border-radius: 10px;
   }
-}
-
-.delete-button {
-  width: 25%;
 }
 
 .form-space {
@@ -292,7 +261,7 @@ export default {
   width: 100%;
   &__button {
     width: 50%;
-    font-size: 15px;
+    font-size: 12px;
   }
 }
 
@@ -301,7 +270,7 @@ export default {
     width: 100%;
   }
   &__button {
-    font-size: 15px;
+    font-size: 12px;
   }
 }
 

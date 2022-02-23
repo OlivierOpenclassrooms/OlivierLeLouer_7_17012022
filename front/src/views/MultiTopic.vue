@@ -11,6 +11,9 @@
             </form>
         </div>
         <div class="card" v-for="item in post" :key="item">
+
+        <!--PARTIE POST-->
+
             <div class="card-post">
                 <div v-for="allUsers in allUsers" :key="allUsers">
                     <div class="card-post__user" v-if="item.userId == allUsers.id">
@@ -51,6 +54,9 @@
                     </form>
                 </div>
             </div>
+
+            <!--PARTIE COMMENTAIRES-->
+
             <div class="scroller">
                 <div class="container-comment" v-for="i in comment" :key="i">
                     <div v-if="item.id == i.postId">
@@ -89,6 +95,8 @@
 import axios from "axios";
 import { mapState } from 'vuex';
 
+let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
 export default {
 
 name: 'multitopic',
@@ -107,8 +115,6 @@ name: 'multitopic',
         }
     },
     mounted() {
-        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
         if (userInLocalStorage == null) {
             this.$router.push('/');
         } else {
@@ -187,8 +193,6 @@ name: 'multitopic',
 
         getOneUser(event) {
             let userId = event.target.getAttribute("userId");
-
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
             let userToken = userInLocalStorage.map(user => user.token);
 

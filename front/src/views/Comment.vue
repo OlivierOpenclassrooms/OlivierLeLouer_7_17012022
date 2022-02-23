@@ -50,10 +50,9 @@ export default {
                 content: null,
                 userId: this.$store.state.userInfos.id,
             },
-            userToken: this.$store.state.userToken[0],
+            userToken: this.$store.state.userToken,
         }
     },
-
     mounted() {
         if (userInLocalStorage == null) {
             this.$router.push('/')
@@ -69,20 +68,29 @@ export default {
     ...mapState({user: 'userInfos'}),
     ...mapState({allUsers: 'allUsersInfos'}),
     ...mapState({topic: 'topicInfos'}),
+
+    /*FILTRAGE DES DONNEES A INTEGRER DANS LE HTML*/
+
+        /*Retourne les topics qui ont le même id que le paramètre de l'url*/
     topicInfos() {
       return this.$store.state.topicInfos.filter(item => item.id == this.$route.params.id)
     },
+        /*Retourne les commentaires qui ont le même id que le paramètre de l'url*/
     commentInfos() {
       return this.$store.state.commentInfos.filter(item => item.topicId == this.$route.params.id)
     },
   },
     methods: {
+
         formatDate(e) {
             const date = new Date(e);
             const day = date.toLocaleDateString();
             const time = date.toLocaleTimeString();
             return `${day} à ${time}`
         },
+
+        /*CRUD COMMENT*/
+
         createComment() {
             const topicId = this.$route.params.id;
 
@@ -95,8 +103,12 @@ export default {
                 Authorization: "Bearer " + this.userToken
                 }
             })
-            .then( response => { console.log(response), this.$store.dispatch('getAllComments') })
-            .catch(error => {console.log(error) })
+            .then( 
+                this.$store.dispatch('getAllComments') 
+            )
+            .catch(error => {
+                console.log(error) 
+            });
         },
         modifyComment(event){
             let commentId = event.target.getAttribute("commentId");
@@ -105,13 +117,17 @@ export default {
             axios.put(`http://localhost:3000/api/comment/${commentId}`, {
                 content: content,
                 userIdOrder: this.commentData.userId
-            }, { 
+                }, { 
                 headers: {
                 Authorization: "Bearer " + this.userToken
                 }
             })
-            .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
-            .catch(error => console.log(error));
+            .then(
+                this.$store.dispatch('getAllComments') 
+            )
+            .catch(error => {
+                console.log(error)
+            });
         },
         deleteComment(event) {
             let commentId = event.target.getAttribute("commentId");
@@ -123,9 +139,16 @@ export default {
                     userIdOrder: this.commentData.userId,
                 }
             })
-            .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
-            .catch(error => console.log(error));
+            .then(
+                this.$store.dispatch('getAllComments') 
+            )
+            .catch(error => {
+                console.log(error)
+            });
         },
+
+        /*REDIRECTION VERS L'UTILISATEUR SELECTIONNE*/
+
         getOneUser(event) {
             let userId = event.target.getAttribute("userId");
 
@@ -134,10 +157,14 @@ export default {
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {
                 Authorization: "Bearer " + userToken
-                } }
+                } 
+            })
+            .then(
+                this.$router.push(`/user/${userId}`) 
             )
-            .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
-            .catch(error => console.log(error));
+            .catch(error => {
+                console.log(error)
+            });
         },
     }
 }

@@ -16,7 +16,6 @@
             <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
             <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
         </div>
-    <router-view/>
     </main>
 </template>
 
@@ -38,15 +37,15 @@ export default {
             mode: 'login'
         }
     },
-
     mounted() {
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
         if (userInLocalStorage != null) {
+
             this.$router.push('/topic');
         }
     },
-    
+
     methods: {
         reload() {
             
@@ -76,24 +75,39 @@ export default {
                 email: this.dataLogin.email,
                 password: this.dataLogin.password,
             })
-            .then(response => { this.saveUserInLocalStorage(response.data), console.log(response), this.$router.go() })
-            .catch(error => { console.log(error, error.response), alert("Mauvais identifiant ou mot de passe") })
+            .then(response => { 
+                this.saveUserInLocalStorage(response.data), 
+                this.$router.go() 
+            })
+            .catch(
+                alert("Mauvais identifiant ou mot de passe") 
+            )
         },
         signUp() {
-            axios.post("http://localhost:3000/api/auth/signup", {
-                email: this.dataLogin.email,
-                prenom: this.dataLogin.prenom,
-                nom: this.dataLogin.nom,
-                password: this.dataLogin.password,
-            })
-            .then(response => {
-                this.saveUserInLocalStorage(response.data),
-                console.log(response),
-                this.$store.dispatch('getUserInfos'),
-                this.$router.push('Topic')
-            })
-            .catch(error => { console.log(error) })
-      }
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,30})$/;
+
+            if (passwordRegex.test(this.dataLogin.password) == false) {
+                console.log(passwordRegex.test(this.dataLogin.password));
+                axios.post("http://localhost:3000/api/auth/signup", {
+                    email: this.dataLogin.email,
+                    prenom: this.dataLogin.prenom,
+                    nom: this.dataLogin.nom,
+                    password: this.dataLogin.password,
+                })
+                .then(response => {
+                    this.saveUserInLocalStorage(response.data),
+                    console.log(response),
+                    this.$store.dispatch('getUserInfos'),
+                    this.$router.push('Topic')
+                })
+                .catch(
+                    alert("Vous devez renseigner tous les champs")
+                );
+            } else {
+                alert('mauvais mdp')
+                console.log(passwordRegex.test(this.dataLogin.password));
+            }
+        }
     }
 }
 </script>

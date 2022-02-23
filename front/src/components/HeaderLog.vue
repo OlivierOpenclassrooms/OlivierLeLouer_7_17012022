@@ -13,9 +13,7 @@ export default {
 }
 </script>
 
-
 <style lang="scss" scoped>
-
 .header {
     display: flex;
     flex-direction: row;
@@ -40,5 +38,4 @@ export default {
         }
     }
 }
-
 </style>
