@@ -51,9 +51,9 @@ export default {
                 axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                     headers: {
                     Authorization: "Bearer " + userToken
-                    } }
-                )
-                .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
+                    }, 
+                })
+                .then( this.$router.push(`/user/${userId}`) )
                 .catch(error => console.log(error));
             } 
         },

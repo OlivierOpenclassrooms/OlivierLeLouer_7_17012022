@@ -81,31 +81,42 @@ export default {
             })
             .catch(
                 alert("Mauvais identifiant ou mot de passe") 
-            )
+            );
         },
         signUp() {
+        /*- de 8 à 30 caractères
+        - au moins une lettre minuscule
+        - au moins une lettre majuscule
+        - au moins un chiffre
+        - au moins un de ces caractères spéciaux: $ @ % * + - _ !
+        - aucun autre caractère possible: pas de & ni de {
+        */
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,30})$/;
 
-            if (passwordRegex.test(this.dataLogin.password) == false) {
-                console.log(passwordRegex.test(this.dataLogin.password));
-                axios.post("http://localhost:3000/api/auth/signup", {
-                    email: this.dataLogin.email,
-                    prenom: this.dataLogin.prenom,
-                    nom: this.dataLogin.nom,
-                    password: this.dataLogin.password,
-                })
-                .then(response => {
-                    this.saveUserInLocalStorage(response.data),
-                    console.log(response),
-                    this.$store.dispatch('getUserInfos'),
-                    this.$router.push('Topic')
-                })
-                .catch(
-                    alert("Vous devez renseigner tous les champs")
-                );
+        /*Pas de caractères spéciaux et nom de domaine avec 2 à 3 lettres*/
+        const emailRegex = /^[^@&"/()!_$*€£`+=;?#]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+
+            if (passwordRegex.test(this.dataLogin.password) == true) {
+                if(emailRegex.test(this.dataLogin.email) == true) {
+                    axios.post("http://localhost:3000/api/auth/signup", {
+                        email: this.dataLogin.email,
+                        prenom: this.dataLogin.prenom,
+                        nom: this.dataLogin.nom,
+                        password: this.dataLogin.password,
+                    })
+                    .then(response => {
+                        this.saveUserInLocalStorage(response.data),
+                        this.$store.dispatch('getUserInfos'),
+                        this.$router.push('Topic')
+                    })
+                    .catch(error => {
+                        alert(error)
+                    });
+                } else {
+                    alert('mauvais email')
+                }
             } else {
                 alert('mauvais mdp')
-                console.log(passwordRegex.test(this.dataLogin.password));
             }
         }
     }

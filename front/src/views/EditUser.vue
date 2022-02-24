@@ -78,6 +78,7 @@ export default {
     },
     editUser() {
       const id = this.$route.params.id;
+      const emailRegex = /^[^@&"/()!_$*€£`+=;?#]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 
       const copy = Object.assign({}, this.dataEdit);
       for(const key in copy) {
@@ -85,37 +86,47 @@ export default {
           delete copy[key]
         }
       }
-      axios.put(`http://localhost:3000/api/auth/${id}`, {
-        ...copy, 
-        userIdOrder: this.dataEdit.userIdOrder
-      }, { headers: {
-          Authorization: "Bearer " + this.userToken
-        } 
-      })
-      .then(response => {  
-        console.log(response), 
-        this.$store.dispatch('getUserInfos'); 
-      })
-      .catch(error => { console.log(error) })
-    },
-    editUserPassword() {
-      const id = this.$route.params.id;
 
-      if(this.passwordCheck.password == this.dataEdit.password) {
-
+      if(emailRegex.test(this.dataEdit.email) == true || this.dataEdit.email == null) {
         axios.put(`http://localhost:3000/api/auth/${id}`, {
-          password: this.dataEdit.password,
+          ...copy, 
           userIdOrder: this.dataEdit.userIdOrder
-          }, { 
-            headers: {
+        }, { headers: {
             Authorization: "Bearer " + this.userToken
-            } 
+          } 
         })
         .then(response => {  
           console.log(response), 
-          this.$store.dispatch('getUserInfos');
+          this.$store.dispatch('getUserInfos'); 
         })
         .catch(error => { console.log(error) })
+      } else {
+        alert('mauvais email')
+      }
+    },
+    editUserPassword() {
+      const id = this.$route.params.id;
+      const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,30})$/;
+
+      if(this.passwordCheck.password == this.dataEdit.password) {
+        if (passwordRegex.test(this.dataLogin.password) == true) {
+
+          axios.put(`http://localhost:3000/api/auth/${id}`, {
+            password: this.dataEdit.password,
+            userIdOrder: this.dataEdit.userIdOrder
+            }, { 
+              headers: {
+              Authorization: "Bearer " + this.userToken
+              } 
+          })
+          .then(response => {  
+            console.log(response), 
+            this.$store.dispatch('getUserInfos');
+          })
+          .catch(error => { console.log(error) })
+        } else {
+          alert('Pas le bon format de mdp')
+        }
 
         } else {
           alert('Veuillez taper deux fois le même mot de passe !')

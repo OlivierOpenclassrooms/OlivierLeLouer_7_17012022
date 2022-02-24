@@ -71,7 +71,7 @@ export default {
 
     /*FILTRAGE DES DONNEES A INTEGRER DANS LE HTML*/
 
-        /*Retourne les topics qui ont le même id que le paramètre de l'url*/
+        /*Retourne le topic qui a le même id que le paramètre de l'url*/
     topicInfos() {
       return this.$store.state.topicInfos.filter(item => item.id == this.$route.params.id)
     },

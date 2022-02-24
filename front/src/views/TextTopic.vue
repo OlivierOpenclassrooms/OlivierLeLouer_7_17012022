@@ -76,8 +76,8 @@ export default {
     },
 
     methods: {
-        formatDate(e) {
-            const date = new Date(e);
+        formatDate(bddDate) {
+            const date = new Date(bddDate);
             const day = date.toLocaleDateString();
             const time = date.toLocaleTimeString();
             return `${day} à ${time}`
