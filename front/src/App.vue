@@ -31,6 +31,11 @@ export default {
 
 
 <style lang="scss">
+$button-color: red;
+
+:export {
+  button-color: $button-color;
+}
 
 html {
   margin: 0;
@@ -105,7 +110,7 @@ input:focus {
     display: flex;
       justify-content: center;
       align-items: center;
-      background-color: red;
+      background-color: $button-color;
       border-radius: 0px 10px 10px 0px;
       font-weight: bold;
       color: white;

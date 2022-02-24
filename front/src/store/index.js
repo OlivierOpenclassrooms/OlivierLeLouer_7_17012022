@@ -11,33 +11,30 @@ export default createStore({
     postInfos: [],
   },
   mutations: {
-    USER_INFOS(state, userInfos) {
+    userInfos(state, userInfos) {
       state.userInfos = userInfos
     },
-    USER_TOKEN(state, userToken) {
+    userToken(state, userToken) {
       state.userToken = userToken
     },
-    ALL_USERS_INFOS(state, allUsersInfos) {
+    allUsersInfos(state, allUsersInfos) {
       state.allUsersInfos = allUsersInfos
     },
-    TOPIC_INFOS(state, topicInfos) {
+    topicInfos(state, topicInfos) {
       state.topicInfos = topicInfos
     },
-    COMMENT_INFOS(state, commentInfos) {
+    commentInfos(state, commentInfos) {
       state.commentInfos = commentInfos
     },
-    POST_INFOS(state, postInfos) {
+    postInfos(state, postInfos) {
       state.postInfos = postInfos
     },
   },
   actions: {
-
-  /*RECUPERATION DES DONNEES DE L'UTILISATEUR*/
-
     getUserInfos() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
-      if(userInLocalStorage != null) {
+      if (userInLocalStorage != null) {
 
         let userId = userInLocalStorage.map(user => user.userId);
 
@@ -46,26 +43,21 @@ export default createStore({
         axios.get(`http://localhost:3000/api/auth/${userId}`, {
           headers: {
               Authorization: "Bearer " + userToken
-          }
-        })
-        .then(response => { 
-          this.commit('USER_INFOS', response.data)
-        })
-        .catch(error => {
-          console.log(error)
-        });
+            }
+          })
+        .then(response => { this.commit('userInfos', response.data) })
+        .catch(error => console.log(error));
       }
     },
     getUserToken() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
-      let userToken = userInLocalStorage.map(user => user.token);
+        let userToken = userInLocalStorage.map(user => user.token);
 
-      this.commit('USER_TOKEN', userToken);
+        this.commit('userToken', userToken);
+
+        console.log(userToken);
     },
-
-    /*RECUPERATIONS DE TOUTES LES DONNEES*/
-
     getAllTopics() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
@@ -76,12 +68,9 @@ export default createStore({
           Authorization: "Bearer " + userToken
         }
       })
-      .then(response => { 
-        this.commit('TOPIC_INFOS', response.data) 
-      })
-      .catch(error => { 
-        console.log(error)
-      });
+        .then(response => { this.commit('topicInfos', response.data), console.log(response.data) 
+        })
+        .catch(error => { console.log(error)})
     },
     getAllComments() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
@@ -93,12 +82,9 @@ export default createStore({
           Authorization: "Bearer " + userToken
         }
       })
-      .then(response => { 
-        this.commit('COMMENT_INFOS', response.data) 
-      })
-      .catch(error => { 
-        console.log(error)
-      });
+        .then(response => { this.commit('commentInfos', response.data), console.log(response.data) 
+        })
+        .catch(error => { console.log(error)})
     },
     getAllUsers() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
@@ -110,12 +96,9 @@ export default createStore({
           Authorization: "Bearer " + userToken
         }
       })
-      .then(response => { 
-        this.commit('ALL_USERS_INFOS', response.data)
-      })
-      .catch(error => { 
-        console.log(error)
-      });
+        .then(response => { this.commit('allUsersInfos', response.data), console.log(response.data) 
+        })
+        .catch(error => { console.log(error)})
     },
     getAllPosts() {
       let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
@@ -127,12 +110,9 @@ export default createStore({
           Authorization: "Bearer " + userToken
         }
       })
-      .then(response => { 
-        this.commit('POST_INFOS', response.data)
-      })
-      .catch(error => { 
-        console.log(error)
-      });
+        .then(response => { this.commit('postInfos', response.data), console.log(response.data) 
+        })
+        .catch(error => { console.log(error)})
     },
   },
   modules: {

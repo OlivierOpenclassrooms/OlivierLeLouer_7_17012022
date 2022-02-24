@@ -16,6 +16,7 @@
             <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
             <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
         </div>
+    <router-view/>
     </main>
 </template>
 
@@ -37,15 +38,15 @@ export default {
             mode: 'login'
         }
     },
+
     mounted() {
         let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
         if (userInLocalStorage != null) {
-
             this.$router.push('/topic');
         }
     },
-
+    
     methods: {
         reload() {
             
