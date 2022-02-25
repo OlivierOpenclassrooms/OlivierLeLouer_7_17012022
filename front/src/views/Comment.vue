@@ -48,9 +48,7 @@ export default {
         return {
             commentData: {
                 content: null,
-                userId: this.$store.state.userInfos.id,
             },
-            userToken: this.$store.state.userToken,
         }
     },
     mounted() {
@@ -61,7 +59,6 @@ export default {
             this.$store.dispatch('getAllUsers');
             this.$store.dispatch('getUserInfos');
             this.$store.dispatch('getAllTopics');
-            this.$store.dispatch('getUserToken');
         }
     },
     computed: {
@@ -82,6 +79,8 @@ export default {
   },
     methods: {
 
+        /*RECUPERE LA DATE ET L'HEURE DANS LA BASE DE DONNEES ET TRANSFORME EN FORMAT LISIBLE*/
+
         formatDate(e) {
             const date = new Date(e);
             const day = date.toLocaleDateString();
@@ -96,56 +95,73 @@ export default {
 
             let userToken = userInLocalStorage.map(user => user.token);
 
+            let userId = userInLocalStorage.map(user => user.userId);
+
             axios.post('http://localhost:3000/api/comment', {
                 content: this.commentData.content,
                 topicId: topicId,
-                userId: this.commentData.userId
-            }, { 
+                userId: userId[0],
+                }, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                    Authorization: "Bearer " + userToken
                 }
             })
-            .then( 
-                this.$store.dispatch('getAllComments') 
-            )
-            .catch(error => {
-                console.log(error) 
+            .then(() =>  { 
+                this.$store.dispatch('getAllComments');
+            })
+            .catch(() => {
+                alert('Veuillez rédiger votre commentaire');
             });
         },
         modifyComment(event){
             let commentId = event.target.getAttribute("commentId");
+
             const content = event.target.elements.commentaire.value;
 
-            axios.put(`http://localhost:3000/api/comment/${commentId}`, {
-                content: content,
-                userIdOrder: this.commentData.userId
-                }, { 
-                headers: {
-                Authorization: "Bearer " + this.userToken
-                }
-            })
-            .then(
-                this.$store.dispatch('getAllComments') 
-            )
-            .catch(error => {
-                console.log(error)
-            });
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
+            if(content != "") {
+                axios.put(`http://localhost:3000/api/comment/${commentId}`, {
+                    content: content,
+                    userIdOrder: userId[0]
+                    }, { 
+                    headers: {
+                        Authorization: "Bearer " + userToken
+                    }
+                })
+                .then(() => {
+                    this.$store.dispatch('getAllComments'); 
+                })
+                .catch(() => {
+                    alert('Impossible de modifier le commentaire');
+                });
+
+            } else {
+                alert('Veuillez remplir le champ de modification du commentaire');
+            }
         },
         deleteComment(event) {
             let commentId = event.target.getAttribute("commentId");
 
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
             axios.delete(`http://localhost:3000/api/comment/${commentId}`, { 
                 headers: {
-                Authorization: "Bearer " + this.userToken
-                }, data: {
-                    userIdOrder: this.commentData.userId,
+                    Authorization: "Bearer " + userToken
+                }, 
+                data: {
+                    userIdOrder: userId[0],
                 }
             })
-            .then(
-                this.$store.dispatch('getAllComments') 
-            )
-            .catch(error => {
-                console.log(error)
+            .then(() => {
+                this.$store.dispatch('getAllComments'); 
+            })
+            .catch(() => {
+                alert('Impossbile de supprimer le commentaire');
             });
         },
 
@@ -158,14 +174,14 @@ export default {
 
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {
-                Authorization: "Bearer " + userToken
+                    Authorization: "Bearer " + userToken
                 } 
             })
-            .then(
-                this.$router.push(`/user/${userId}`) 
-            )
-            .catch(error => {
-                console.log(error)
+            .then(() => {
+                this.$router.push(`/user/${userId}`);
+            })
+            .catch(() => {
+                alert('Impossible d\'être redirigé vers l\'utilisateur');
             });
         },
     }

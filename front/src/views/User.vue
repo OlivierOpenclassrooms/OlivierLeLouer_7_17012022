@@ -50,6 +50,9 @@ export default {
     },
   },
   methods: {
+
+    /*RECUPERE LA DATE ET L'HEURE DANS LA BASE DE DONNEES ET TRANSFORME EN FORMAT LISIBLE*/
+
     formatDate(bddDate) {
       const date = new Date(bddDate);
       const day = date.toLocaleDateString();
@@ -71,7 +74,6 @@ export default {
   }
   .button-create {
     border-radius: 10px;
-    font-size: 15px;
   }
 }
 .container-user {

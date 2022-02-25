@@ -106,21 +106,17 @@ name: 'multitopic',
         return {
             commentData: {
                 content: null,
-                userId: this.$store.state.userInfos.id,
             },
             dataPost: {
                 title: null,
                 image: null,
-                userId: this.$store.state.userInfos.id,
             },
-            userToken: this.$store.state.userToken,
         }
     },
     mounted() {
         if (userInLocalStorage == null) {
             this.$router.push('/');
         } else {
-            this.$store.dispatch('getUserToken');
             this.$store.dispatch('getAllComments');
             this.$store.dispatch('getAllUsers');
             this.$store.dispatch('getUserInfos');
@@ -134,61 +130,96 @@ name: 'multitopic',
     ...mapState({comment: 'commentInfos'}),
   },
     methods: {
+
+        /*RECUPERE LA DATE ET L'HEURE DANS LA BASE DE DONNEES ET TRANSFORME EN FORMAT LISIBLE*/
+
         formatDate(bddDate) {
             const date = new Date(bddDate);
             const day = date.toLocaleDateString();
             const time = date.toLocaleTimeString();
-            return `le ${day} à ${time}`
+            return `le ${day} à ${time}`;
         },
         /*FUNCTIONS COMMENT*/
 
         createComment(event) {
             const postId = event.target.getAttribute("postId");
+
             const content = event.target.elements.commentaire.value;
 
-            if(content != null) {
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
+            if(content != "") {
                 axios.post('http://localhost:3000/api/comment', {
                     content: content,
                     postId: postId,
-                    userId: this.commentData.userId
+                    userId: userId[0],
                     }, { 
                     headers: {
-                    Authorization: "Bearer " + this.userToken
+                        Authorization: "Bearer " + userToken
                     }
                 })
-                .then( response => { console.log(response), this.$store.dispatch('getAllComments'), content == null })
-                .catch(error => {console.log(error) })
+                .then(() => { 
+                    this.$store.dispatch('getAllComments');
+                })
+                .catch(() => {
+                    alert('Impossible de mettre un commentaire');
+                });
+
+            } else {
+                alert('Veuillez mettre un texte dans le champ de commentaire');
             }
         },
         modifyComment(event){
             let commentId = event.target.getAttribute("commentId");
+
             const content = event.target.elements.commentaire.value;
 
-            axios.put(`http://localhost:3000/api/comment/${commentId}`, {
-                content: content,
-                userIdOrder: this.commentData.userId
-            }, { 
-                headers: {
-                Authorization: "Bearer " + this.userToken
-                }
-            })
-            .then((response) => { console.log(response), this.$store.dispatch('getAllComments') })
-            .catch(error => console.log(error));
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+            if(content != "") {
+                axios.put(`http://localhost:3000/api/comment/${commentId}`, {
+                    content: content,
+                    userIdOrder: userId[0],
+                    }, { 
+                    headers: {
+                        Authorization: "Bearer " + userToken
+                    }
+                })
+                .then(() => {
+                    this.$store.dispatch('getAllComments');
+                })
+                .catch(() => {
+                    alert('Impossible de modifier le commentaire');
+                });
+
+            } else {
+                alert('Veuillez remplir le champ de modification du commentaire');
+            }
         },
         deleteComment(event) {
             let commentId = event.target.getAttribute("commentId");
 
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
             axios.delete(`http://localhost:3000/api/comment/${commentId}`,{ 
                 headers: {
-                Authorization: "Bearer " + this.userToken
-                }, data: {
-                    userIdOrder: this.commentData.userId
+                    Authorization: "Bearer " + userToken
+                }, 
+                data: {
+                    userIdOrder: userId[0],
                 }
             })
-            .then((response) => {
-                console.log(response), this.$store.dispatch('getAllComments')
-                })
-            .catch(error => console.log(error));
+            .then(() => {
+                this.$store.dispatch('getAllComments');
+            })
+            .catch(() => {
+                alert('Impossible de supprimer le commentaire');
+            });
         },
 
         /*FUNCTIONS USER*/
@@ -200,85 +231,127 @@ name: 'multitopic',
 
             axios.get(`http://localhost:3000/api/auth/${userId}`, { 
                 headers: {
-                Authorization: "Bearer " + userToken
-                } }
-            )
-            .then((response) => { console.log(response), this.$router.push(`/user/${userId}`) })
-            .catch(error => console.log(error));
+                    Authorization: "Bearer " + userToken
+                } 
+            })
+            .then(() => {
+                this.$router.push(`/user/${userId}`);
+            })
+            .catch(() => {
+                alert('Impossbile de sélectionner l\'utilisateur');
+            });
         },
 
         /*FUNCTIONS POST*/
 
-        selectFile(e) {
-            this.dataPost.image = e.target.files[0] || e.dataTransfer.files;
+        selectFile(event) {
+            this.dataPost.image = event.target.files[0] || event.dataTransfer.files;
         },
 
         createPost(event) {
             const title = event.target.elements.post.value;
+
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
             const formData = new FormData();
+
             formData.append("image", this.dataPost.image);
             formData.append("title", title);
-            formData.append("userId", this.dataPost.userId);
-            console.log("test récup", formData.get("image"));
+            formData.append("userId", userId[0]);
 
-            axios.post('http://localhost:3000/api/post', formData, { 
-                headers: {
-                Authorization: "Bearer " + this.userToken
-                }
-            })
-            .then( response => { console.log(response), this.$store.dispatch('getAllPosts')})
-            .catch(error => {console.log(error)})
+            if(title != "") {
+                axios.post('http://localhost:3000/api/post', formData, { 
+                    headers: {
+                        Authorization: "Bearer " + userToken
+                    }
+                })
+                .then(() => {
+                    this.$store.dispatch('getAllPosts');
+                })
+                .catch(() => {
+                    alert('Impossible de créer le post');
+                });
+
+            } else {
+                alert('Veuillez mettre une description à votre post');
+            }
         },
         deletePost(event) {
             let postId = event.target.getAttribute("postId");
 
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
             axios.delete(`http://localhost:3000/api/post/${postId}`,{ 
                 headers: {
-                Authorization: "Bearer " + this.userToken
-                }, data: {
-                    userIdOrder: this.dataPost.userId,
+                    Authorization: "Bearer " + userToken
+                }, 
+                data: {
+                    userIdOrder: userId[0],
                 },
             })
-            .then((response) => {
-                console.log(response), this.$store.dispatch('getAllPosts')
+            .then(() => {
+                this.$store.dispatch('getAllPosts');
             })
-            .catch(error => 
-                console.log(error)
-            );
+            .catch(() => {
+                alert('Impossible de supprimer le post');
+            });
         },
         modifyPostDescription(event){
             let postId = event.target.getAttribute("postId");
+
             let title = event.target.elements.post.value;
 
-            axios.put(`http://localhost:3000/api/post/${postId}`, {
-                title: title,
-                userIdOrder: this.dataPost.userId,
-            }, { 
-                headers: {
-                Authorization: "Bearer " + this.userToken
-                }
-            })
-            .then((response) => { console.log(response), this.$store.dispatch('getAllPosts') })
-            .catch(error => console.log(error));
+            let userToken = userInLocalStorage.map(user => user.token);
+
+            let userId = userInLocalStorage.map(user => user.userId);
+
+            if(title != "") {
+                axios.put(`http://localhost:3000/api/post/${postId}`, {
+                    title: title,
+                    userIdOrder: userId[0],
+                    }, { 
+                    headers: {
+                        Authorization: "Bearer " + userToken
+                    }
+                })
+                .then(() => {
+                    this.$store.dispatch('getAllPosts'); 
+                })
+                .catch(() => {
+                    alert('Impossbile de modifier le post');
+                });
+
+            } else {
+                alert('Veuillez remplir le champ de modification du post');
+            }
         },
         modifyPostPicture(event) {
             let postId = event.target.getAttribute("postId");
 
-            const formData = new FormData();
-            formData.append("image", this.dataPost.image);
-            formData.append("userIdOrder", this.dataPost.userId);
-            console.log("test récup", formData.get("image"));
+            let userToken = userInLocalStorage.map(user => user.token);
 
-            axios.put(`http://localhost:3000/api/post/image/${postId}`, formData,
-            { headers: {
-                Authorization: "Bearer " + this.userToken
+            let userId = userInLocalStorage.map(user => user.userId);
+
+            const formData = new FormData();
+            
+            formData.append("image", this.dataPost.image);
+            formData.append("userIdOrder", userId[0]);
+
+            axios.put(`http://localhost:3000/api/post/image/${postId}`, formData, {
+                headers: {
+                    Authorization: "Bearer " + userToken
                 },
             })
-            .then(response => {  
-                console.log(response), 
-                this.$store.dispatch('getAllPosts') 
+            .then(() => {
+                this.$store.dispatch('getAllPosts');
             })
-            .catch(error => { console.log(error) })
+            .catch(() => {
+                alert('Veuillez charger une image')
+            })
         },
     }
 }

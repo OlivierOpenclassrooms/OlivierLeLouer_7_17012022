@@ -2,20 +2,18 @@
     <main>
         <div class="container-topic">
             <div class="container-topic__card" @click="this.$router.push('/multitopic')">
-                <img src="../assets/multimedia-icon.png">
+                <img src="../assets/multimedia-icon.png" alt="Illustration d'éléments multimédias">
                 <h2>Viens partager tes photos et vidéos sur ce forum !</h2>
             </div>
             <div class="container-topic__card" @click="this.$router.push('/texttopic')">
-                <img src="../assets/discussion-icon.png">
+                <img src="../assets/discussion-icon.png" alt="Illustration de conversation">
                 <h2>Viens poser tes questions ou simplement discuter avec tes collègues sur ce forum !</h2>
             </div>
         </div>
-        <router-view/>
     </main>
 </template>
 
 <script>
-
 export default {
 
     mounted() {
@@ -26,7 +24,6 @@ export default {
         } 
     }
 }
-
 </script>
 
 <style lang="scss" scoped> 

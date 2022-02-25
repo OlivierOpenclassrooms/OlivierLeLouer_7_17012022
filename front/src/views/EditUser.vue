@@ -11,8 +11,8 @@
           <input class="input-file" ref="file" id="file" name="file" @change="selectFile" type="file"/>
           <p class="form__button button-create" @click="editUserPicture">Modifier la photo de profil</p>
         </div>
-        <div class="user">
-          <input class="user__input-infos" type="email" v-model="dataEdit.email" placeholder='Entrer email'/>
+        <div class="user"> 
+          <input class="user__input-infos" type="email" name="email" v-model="dataEdit.email" placeholder='Entrer email'/>
           <input class="user__input-infos" type="text" v-model="dataEdit.prenom" placeholder='Entrer prénom'/>
           <input class="user__input-infos" type="text" v-model="dataEdit.nom" placeholder='Entrer nom' />
           <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste"/>
@@ -31,8 +31,9 @@
 
 <script>
 import axios from 'axios';
-
 import { mapState } from 'vuex';
+
+let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
 export default {
   name: "EditUser",
@@ -47,13 +48,10 @@ export default {
         prenom: null,
         password: null,
         image: null,
-        isAdmin: null,
-        userIdOrder: this.$store.state.userInfos.id,
       },
       passwordCheck : {
         password: null,
       },
-      userToken: this.$store.state.userToken,
     }
   },
 
@@ -64,7 +62,6 @@ export default {
       this.$router.push('/');
     } else {
       this.$store.dispatch('getUserInfos');
-      this.$store.dispatch('getUserToken');
     } 
   },
 
@@ -73,14 +70,20 @@ export default {
   },
 
   methods: {
-    selectFile(e) {
-      this.dataEdit.image = e.target.files[0] || e.dataTransfer.files;
+    selectFile(event) {
+      this.dataEdit.image = event.target.files[0] || event.dataTransfer.files;
     },
     editUser() {
       const id = this.$route.params.id;
+
       const emailRegex = /^[^@&"/()!_$*€£`+=;?#]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 
+      let userToken = userInLocalStorage.map(user => user.token);
+
+      let userId = userInLocalStorage.map(user => user.userId);
+
       const copy = Object.assign({}, this.dataEdit);
+
       for(const key in copy) {
         if (copy[key] == null) {
           delete copy[key]
@@ -88,86 +91,112 @@ export default {
       }
 
       if(emailRegex.test(this.dataEdit.email) == true || this.dataEdit.email == null) {
+
         axios.put(`http://localhost:3000/api/auth/${id}`, {
           ...copy, 
-          userIdOrder: this.dataEdit.userIdOrder
-        }, { headers: {
-            Authorization: "Bearer " + this.userToken
+          userIdOrder: userId[0],
+          }, { 
+          headers: {
+            Authorization: "Bearer " + userToken
           } 
         })
-        .then(response => {  
-          console.log(response), 
+        .then(() => {  
           this.$store.dispatch('getUserInfos'); 
+          alert('Le profil a été modifié');
         })
-        .catch(error => { console.log(error) })
+        .catch(() => { 
+          alert('Impossible de modifier le profil');
+        });
+
       } else {
-        alert('mauvais email')
+        alert('Cet email n\'est pas disponible');
       }
     },
     editUserPassword() {
       const id = this.$route.params.id;
+
       const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,30})$/;
 
+      let userToken = userInLocalStorage.map(user => user.token);
+
+      let userId = userInLocalStorage.map(user => user.userId);
+
       if(this.passwordCheck.password == this.dataEdit.password) {
-        if (passwordRegex.test(this.dataLogin.password) == true) {
+
+        if (passwordRegex.test(this.dataEdit.password) == true) {
 
           axios.put(`http://localhost:3000/api/auth/${id}`, {
             password: this.dataEdit.password,
-            userIdOrder: this.dataEdit.userIdOrder
+            userIdOrder: userId[0],
             }, { 
-              headers: {
-              Authorization: "Bearer " + this.userToken
-              } 
+            headers: {
+              Authorization: "Bearer " + userToken
+            } 
           })
-          .then(response => {  
-            console.log(response), 
+          .then(()=> {  
+            alert('Mot de passe modifié');
             this.$store.dispatch('getUserInfos');
           })
-          .catch(error => { console.log(error) })
-        } else {
-          alert('Pas le bon format de mdp')
-        }
+          .catch(() => { 
+            alert('Impossible de modifier le mot de passe');
+          })
 
         } else {
-          alert('Veuillez taper deux fois le même mot de passe !')
+          alert('Votre mot de mot de passe doit contenir au moins : une lettre minuscule, une lettre majuscule, un chiffre et un de ces caractères spéciaux: $ @ % * + - _ !');
         }
+
+      } else {
+        alert('Veuillez entrer deux fois le même mot de passe !');
+      }
       
     },
     editUserPicture() {
       const id = this.$route.params.id;
 
-      const formData = new FormData();
-      formData.append("image", this.dataEdit.image);
-      formData.append("userIdOrder", this.dataEdit.userIdOrder);
-      console.log("test récup", formData.get("image"));
+      let userToken = userInLocalStorage.map(user => user.token);
 
-      axios.put(`http://localhost:3000/api/auth/image/${id}`, formData,
-        { headers: {
-          Authorization: "Bearer " + this.userToken
+      let userId = userInLocalStorage.map(user => user.userId);
+
+      const formData = new FormData();
+
+      formData.append("image", this.dataEdit.image);
+      formData.append("userIdOrder", userId[0]);
+
+      axios.put(`http://localhost:3000/api/auth/image/${id}`, formData, {
+        headers: {
+          Authorization: "Bearer " + userToken
         },
       })
-      .then(response => {  
-        console.log(response), 
-        this.$store.dispatch('getUserInfos') 
+      .then(() => {  
+        this.$store.dispatch('getUserInfos');
+        alert('Votre photo a été modifiée');
       })
-      .catch(error => { console.log(error) })
+      .catch(() => {
+        alert('Veuillez sélectionner une photo de profil');
+      });
     },
     deleteUser() {
       const id = this.$route.params.id;
 
+      let userId = userInLocalStorage.map(user => user.userId);
+
+      let userToken = userInLocalStorage.map(user => user.token);
+
       axios.delete(`http://localhost:3000/api/auth/${id}`, { 
         headers: {
-          Authorization: "Bearer " + this.userToken
+          Authorization: "Bearer " + userToken
         }, 
         data: {
-          userIdOrder: this.dataEdit.userIdOrder,
+          userIdOrder: userId[0],
         }
       })
       .then(() => {
         localStorage.clear();
         this.$router.push('/');
       })
-      .catch(error => console.log(error));
+      .catch(() => {
+        alert('Impossible de supprimer le profil');
+      });
     },
   },
 };

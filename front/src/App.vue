@@ -29,14 +29,13 @@ export default {
 };
 </script>
 
-
 <style lang="scss">
 html {
   margin: 0;
   padding:0;
   height: 100%;
 }
-.general-color { 
+.generalBody { 
   margin : 0px;
   padding : 0px;
 }
@@ -156,7 +155,7 @@ input:focus {
 
 @media only screen and (max-width: 768px) {
     .button-create {
-        font-size: 12px;
+      font-size: 12px;
     }
 }
 </style>
