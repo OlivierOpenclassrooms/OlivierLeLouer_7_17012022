@@ -5,9 +5,15 @@
         </div>
         <div class="card-create">
             <form class="card-create__form" @submit.prevent="createPost">
-                <input class="card-create__form__description input-border" type='text' name="post" placeholder="Description"/>
-                <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-                <input type="submit" class="button-create input-border" value="Publier"/>
+                <div class="label-post">
+                    <label for="post">* Donnez une description à votre post</label>
+                    <input class="card-create__form__description input-border" type='text' name="post" placeholder="Description du post"/>
+                </div>
+                <div class="label-file">
+                    <label for="file">* Choisir une image</label>
+                    <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
+                    <input type="submit" class="button-create input-border" value="Publier"/>
+                </div>
             </form>
         </div>
         <div class="card" v-for="item in post" :key="item">
@@ -15,6 +21,9 @@
         <!--PARTIE POST-->
 
             <div class="card-post">
+                <div v-if="item.userId == user.id || user.isAdmin == true" class="fontDelete">
+                    <i class="fa-solid fa-trash-can" title="Supprimer le post" @click="deletePost" :postId="item.id"></i>
+                </div>
                 <div v-for="allUsers in allUsers" :key="allUsers">
                     <div class="card-post__user" v-if="item.userId == allUsers.id">
                         <div class="user">
@@ -26,9 +35,6 @@
                                 <p class='user__description__create'>{{ formatDate(item.createdAt) }}</p>
                             </div>
                         </div>
-                        <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
-                            <i class="fa-solid fa-trash-can" @click="deletePost" :postId="item.id"></i>
-                        </div>
                     </div>
                 </div>
                 <div class="post">
@@ -36,8 +42,8 @@
                         <p>{{ item.title }}</p>
                         <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
                             <form class="form-modify"  @submit.prevent="modifyPostDescription" :postId="item.id">
-                                <input class="form-modify__description" type='text' name="post" placeholder="Entrer modification"/>
-                                <input type="submit" class="button-comment" value="Modifier"/>
+                                <input class="form-modify__description" type='text' name="post" title="Renseignez la modification du post" placeholder="Entrer modification"/>
+                                <input type="submit" class="button-comment" title="Cliquez ici pour modifier le post" value="Modifier"/>
                             </form>
                         </div>
                     </div>
@@ -46,8 +52,8 @@
                     </div>
                 </div>
                 <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
-                    <input class="picture__input" ref="file" id="file" name="file" @change="selectFile" type="file"/>
-                    <button class='button-comment' @click="modifyPostPicture" :postId="item.id">Modifier image</button>
+                    <input class="picture__input" ref="file" id="file" name="file" title="Selectionnez un fichier" @change="selectFile" type="file"/>
+                    <button class='button-comment' @click="modifyPostPicture" title="Cliquez ici pour modifier l'image avec le fichier selectionné" :postId="item.id">Modifier image</button>
                 </div>
                 <div class="card-create">
                     <form class="card-create__form" @submit.prevent="createComment" :postId="item.id">
@@ -78,10 +84,10 @@
                                     </div>
                                     <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
                                         <form class="form-modify" @submit.prevent="modifyComment" :commentId="i.id">
-                                            <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
-                                            <input type="submit" class="button-comment" value="Modifier"/>
+                                            <input class="form-modify__description" type='text' title="Renseignez la modification du commentaire" name="commentaire" placeholder="Entrer modification"/>
+                                            <input type="submit" class="button-comment" title="Cliquez ici pour modifier le commentaire" value="Modifier"/>
                                         </form>
-                                        <button class='button-comment' @click="deleteComment" :commentId="i.id">Supprimer</button>
+                                        <button class='button-comment' @click="deleteComment" title="Supprimer le commentaire" :commentId="i.id">Supprimer</button>
                                     </div>
                                 </div>
                             </div>
@@ -382,8 +388,15 @@ name: 'multitopic',
     border-radius: 10px;
 }
 
-.picture__input {
-    margin-left: 20px;
+
+.label-post {
+    width: 100%;
+}
+
+.label-file {
+    display: flex;
+    margin-top: 10px;
+    flex-direction: row;
 }
 
 /* POST & COMMENT */
@@ -419,8 +432,8 @@ name: 'multitopic',
     flex-direction: row;
     align-items: center;
     min-width: 50%;
-    padding-left: 2%;
     padding-top: 2%;
+    padding-left: 2%;
     &__image {
         width: 50px;
         height: 50px;
@@ -448,6 +461,15 @@ name: 'multitopic',
             font-size: 10px;
             text-align: left;
         }
+    }
+}
+
+.fontDelete {
+    position: relative;
+    text-align: right;
+    height: 0;
+    &:hover {
+        cursor: pointer;
     }
 }
 
@@ -481,12 +503,17 @@ name: 'multitopic',
 /* COMMENT */
 
 .card-create {
+    display: flex;
+    flex-direction: column;
     &__form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
         &__hidden {
             display: none;
         }
         &__description {
-            width: 100%;
+            width: 98%;
             border-radius: 10px;
         }
     }

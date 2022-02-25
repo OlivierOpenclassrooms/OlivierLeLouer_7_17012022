@@ -4,12 +4,16 @@
             <h1 class='card__title' v-if ="mode == 'login'">Connexion</h1>
             <h1 class='card__title' v-else>Inscription</h1>
             <div class= 'form'>
-                <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
-                <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
+                <label for="email">* Email</label>
+                <input type="email" name="email" v-model="dataLogin.email" required/>
+                <label for="password">* Mot de passe</label>
+                <input type="password" name="password" v-model="dataLogin.password" required/>
             </div>
             <div class= 'form' v-if='mode=="signUp"'>
-                <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
-                <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
+                <label for="nom">* Nom</label>
+                <input type="text" name="nom" v-model="dataLogin.nom" required/>
+                <label for="prenom">* Prénom</label>
+                <input type="text" name="prenom" v-model="dataLogin.prenom" required/>
             </div>
             <button @click.prevent="login" v-if="mode == 'login'">S'identifier</button>
             <button @click.prevent="signUp" v-else>S'inscrire</button>
@@ -80,7 +84,8 @@ export default {
             });
         },
         signUp() {
-        /*- de 8 à 30 caractères
+        /*le mot de passe doit contenir :
+        - de 8 à 30 caractères
         - au moins une lettre minuscule
         - au moins une lettre majuscule
         - au moins un chiffre
@@ -133,11 +138,11 @@ export default {
     margin: auto;
     margin-top: 10%;
     h1 {
-        color: rgba(255, 0, 0, 0.829);
+        color: red;
     }
     button {
         height: 40px;
-        background-color: rgba(255, 0, 0, 0.829);
+        background-color: red;
         border: none;
         color: white;
         font-weight: bolder;
@@ -162,21 +167,12 @@ export default {
     &__action {
         cursor: pointer;
         text-decoration: underline;
-        color: rgba(255, 0, 0, 0.829);
+        color: red;
         font-weight: bolder;
         &:active {
             color: white;
         }
     }
-}
-
-.card-description {
-    background-color: green;
-    width: 40%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    bottom: 0;
 }
 
 /*****************************/

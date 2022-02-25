@@ -23,14 +23,15 @@
             </div>
             <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons">
                 <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
-                    <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
-                    <input type="submit" class="button-comment" value="Modifier"/>
+                    <input class="form-modify__description" type='text' title="Renseignez la modification du commentaire" name="commentaire" placeholder="Entrer modification"/>
+                    <input type="submit" class="button-comment" title="Cliquez ici pour modifier le commentaire" value="Modifier"/>
                 </form>
-                <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
+                <button class='button-comment' @click="deleteComment" title="Supprimer le comentaire" :commentId="item.id">Supprimer</button>
             </div>
         </div>
         <div class="card-create">
-            <textarea type="text" placeholder="Ecrivez votre réponse ici" v-model="commentData.content"></textarea>
+            <label for="comment">* Rédiger votre commentaire ci-dessous :</label>
+            <textarea type="text" name="comment" v-model="commentData.content"></textarea>
             <p class="button-create" @click="createComment">Répondre</p>
         </div>
     </main>
@@ -240,6 +241,10 @@ export default {
     justify-content: center;
     align-items: center;
     width: 100%;
+    label {
+        width: 100%;
+        text-align: left;
+    }
     textarea {
         width: 100%;
         text-decoration: none;

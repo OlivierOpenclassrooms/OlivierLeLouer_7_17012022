@@ -11,18 +11,25 @@
           <input class="input-file" ref="file" id="file" name="file" @change="selectFile" type="file"/>
           <p class="form__button button-create" @click="editUserPicture">Modifier la photo de profil</p>
         </div>
-        <div class="user"> 
-          <input class="user__input-infos" type="email" name="email" v-model="dataEdit.email" placeholder='Entrer email'/>
-          <input class="user__input-infos" type="text" v-model="dataEdit.prenom" placeholder='Entrer prénom'/>
-          <input class="user__input-infos" type="text" v-model="dataEdit.nom" placeholder='Entrer nom' />
-          <input class="user__input-infos" type="text" v-model="dataEdit.poste" placeholder="Poste"/>
-          <textarea class="user__input-infos" type="text" v-model="dataEdit.biographie" placeholder="Biographie"></textarea>
+        <div class="user">
+          <label for="email">Email</label> 
+          <input class="user__input-infos" type="email" name="email" v-model="dataEdit.email"/>
+          <label for="prenom">Prénom</label>
+          <input class="user__input-infos" name="prenom" type="text" v-model="dataEdit.prenom"/>
+          <label for="nom">Nom</label>
+          <input class="user__input-infos" name="nom" type="text" v-model="dataEdit.nom"/>
+          <label for="nom">Poste</label>
+          <input class="user__input-infos" name="poste" type="text" v-model="dataEdit.poste"/>
+          <label for="biographie">Biographie</label>
+          <textarea class="user__input-infos" name="biographie" type="text" v-model="dataEdit.biographie"></textarea>
           <p class="user__button button-create" @click="editUser">Modifier les informations</p>
         </div>
       </div>
       <div class="form form-space">
-        <input class="form__input" type="password" v-model="passwordCheck.password" placeholder="Nouveau mot de passe"/>
-        <input class="form__input" type="password" v-model="dataEdit.password" placeholder="Saisissez une seconde fois le nouveau mot de passe"/>
+        <label for="password">Nouveau mot de passe</label>
+        <input class="form__input" type="password" name="poste" v-model="passwordCheck.password"/>
+        <label for="passwordCheck">Saisissez une seconde fois le nouveau mot de passe</label>
+        <input class="form__input" type="passwordCheck" name="poste" v-model="dataEdit.password"/>
         <p class="form__button button-create" @click="editUserPassword">Modifier le mot de passe</p>
       </div>
     </div>

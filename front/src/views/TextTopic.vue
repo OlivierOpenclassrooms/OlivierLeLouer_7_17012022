@@ -5,7 +5,8 @@
         </div>
         <div class="card-create">
             <form class="card-create__form" @submit.prevent="createTopic">
-                <input class="card-create__form__description" type='text' name="topic" placeholder="Titre du topic"/>
+                <label for="topic">* Titre du topic :</label>
+                <input class="card-create__form__description" type='text' name="topic" placeholder="Donnez un titre à votre topic"/>
                 <input type="submit" class="button-create" value="Créer"/>
             </form>
         </div>
@@ -26,10 +27,10 @@
                 </div>
                 <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
                     <form class="form-modify" @submit.prevent="modifyTopic" :topicId="i.id">
-                        <input class="form-modify__description" type='text' name="topic" placeholder="Entrer modification"/>
-                        <input type="submit" class="button-comment" value="Modifier"/>
+                        <input class="form-modify__description" type='text' title="Renseignez la modification du topic" name="topic" placeholder="Entrer modification"/>
+                        <input type="submit" class="button-comment" title="Cliquez ici pour modifier le topic" value="Modifier"/>
                     </form>
-                    <button class='button-comment' @click="deleteTopic" :topicId="i.id">Supprimer</button>
+                    <button class='button-comment' @click="deleteTopic" title="Supprimer le topic" :topicId="i.id">Supprimer</button>
                 </div>
             </div>
         </div>
@@ -225,6 +226,11 @@ export default {
         width: 100%;
         flex-direction: column;
     }
+}
+
+label {
+    text-align: left;
+    margin-right: 5px;
 }
 
 .card-infos {

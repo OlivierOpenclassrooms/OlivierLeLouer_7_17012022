@@ -77,7 +77,7 @@ main {
         justify-content: center;
         width: 100%;
         &__description {
-            width: 80%;
+            width: 69%;
             height: 30px;
             border-radius: 10px 0px 0px 10px;
         }
@@ -86,6 +86,15 @@ main {
 
 input:focus {
   outline: none;
+}
+
+label {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  font-size: 12px;
+  font-weight: bolder;
 }
 
 textarea:focus {
@@ -138,6 +147,7 @@ textarea:focus {
 
 .form-modify {
     margin-right: 10px;
+    text-align: left;
     &__description {
         border-radius: 10px;
     }
