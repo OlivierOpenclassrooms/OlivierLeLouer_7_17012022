@@ -57,7 +57,7 @@
                 </div>
                 <div class="card-create">
                     <form class="card-create__form" @submit.prevent="createComment" :postId="item.id">
-                        <input class="card-create__form__description" type='text' name="commentaire" placeholder="Ecrire un commentaire"/>
+                        <input class="card-create__form__description" type='text' title="Rédigez ici votre commentaire" name="commentaire" placeholder="Ecrire un commentaire"/>
                         <input class="card-create__form__hidden" type="submit" @keyup.enter="submit"/>
                     </form>
                 </div>

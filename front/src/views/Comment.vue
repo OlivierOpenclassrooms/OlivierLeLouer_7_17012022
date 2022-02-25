@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="card-create">
-            <label for="comment">* Rédiger votre commentaire ci-dessous :</label>
+            <label for="comment">* Rédigez votre commentaire ci-dessous :</label>
             <textarea type="text" name="comment" v-model="commentData.content"></textarea>
             <p class="button-create" @click="createComment">Répondre</p>
         </div>
