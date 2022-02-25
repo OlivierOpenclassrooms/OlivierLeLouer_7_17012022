@@ -81,10 +81,13 @@ export default {
 
         /*RECUPERE LA DATE ET L'HEURE DANS LA BASE DE DONNEES ET TRANSFORME EN FORMAT LISIBLE*/
 
-        formatDate(e) {
-            const date = new Date(e);
+        formatDate(bddDate) {
+            const date = new Date(bddDate);
+
             const day = date.toLocaleDateString();
+
             const time = date.toLocaleTimeString();
+
             return `${day} à ${time}`
         },
 
@@ -161,7 +164,7 @@ export default {
                 this.$store.dispatch('getAllComments'); 
             })
             .catch(() => {
-                alert('Impossbile de supprimer le commentaire');
+                alert('Impossible de supprimer le commentaire');
             });
         },
 

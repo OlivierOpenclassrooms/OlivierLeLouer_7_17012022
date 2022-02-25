@@ -50,6 +50,10 @@ export default {
         switchToLogin() {
             this.mode ='login'
         },
+        /*ENREGISTRE LES CLES ET VALEURS DANS LE LOCAL STORAGE
+        *Envoie le user dans le tableau userInLocalStorage puis enregistre dans le localStorage
+        *Si user est déjà présent le local storage est vidé et on push le nouvel utilisateur
+        */
         saveUserInLocalStorage(response) {
             if (userInLocalStorage === null) {
                 userInLocalStorage = [];
@@ -89,6 +93,7 @@ export default {
         const emailRegex = /^[^@&"/()!_$*€£`+=;?#]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 
             if (passwordRegex.test(this.dataLogin.password) == true) {
+
                 if(emailRegex.test(this.dataLogin.email) == true) {
                     axios.post("http://localhost:3000/api/auth/signup", {
                         email: this.dataLogin.email,
@@ -104,9 +109,11 @@ export default {
                     .catch(() => {
                         alert('Cette adresse email existe déjà !')
                     });
+
                 } else {
                     alert('Mauvaise adresse email')
                 }
+
             } else {
                 alert('Votre mot de mot de passe doit contenir au moins : une lettre minuscule, une lettre majuscule, un chiffre et un de ces caractères spéciaux: $ @ % * + - _ !')
             }

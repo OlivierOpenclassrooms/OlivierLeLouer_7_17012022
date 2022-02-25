@@ -75,8 +75,11 @@ export default {
 
         formatDate(bddDate) {
             const date = new Date(bddDate);
+
             const day = date.toLocaleDateString();
+
             const time = date.toLocaleTimeString();
+            
             return `${day} à ${time}`;
         },
 
@@ -132,7 +135,10 @@ export default {
             });
         },
         modifyTopic(event){
+            /*Toutes la dataEdit est copiée dans un objet*/
             const copy = Object.assign({}, this.dataEdit);
+            /*Grâce à cet objet on peut créer une boucle qui va supprimer toutes les valeurs "null"*/
+            /*On envoie "...copy" dans la requête à l'API et ainsi seules les valeurs complétées sont envoyées à l'API*/
 
             for(const key in copy) {
                 if (copy[key] == null) {

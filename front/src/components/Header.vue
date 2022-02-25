@@ -54,7 +54,9 @@ export default {
                     }, 
                 })
                 .then( this.$router.push(`/user/${userId}`) )
-                .catch(error => console.log(error));
+                .catch(() => {
+                    alert('Impossible d\'être redirigé');
+                });
             } 
         },
     }

@@ -135,8 +135,11 @@ name: 'multitopic',
 
         formatDate(bddDate) {
             const date = new Date(bddDate);
+
             const day = date.toLocaleDateString();
+
             const time = date.toLocaleTimeString();
+
             return `le ${day} à ${time}`;
         },
         /*FUNCTIONS COMMENT*/
@@ -179,6 +182,7 @@ name: 'multitopic',
             let userToken = userInLocalStorage.map(user => user.token);
 
             let userId = userInLocalStorage.map(user => user.userId);
+
             if(content != "") {
                 axios.put(`http://localhost:3000/api/comment/${commentId}`, {
                     content: content,
@@ -254,13 +258,15 @@ name: 'multitopic',
             let userToken = userInLocalStorage.map(user => user.token);
 
             let userId = userInLocalStorage.map(user => user.userId);
-
+            /*Création d'un objet FormData pour envoyer l'image à l'API*/
             const formData = new FormData();
-
+            /*Ajout de toutes clés et valeur à l'objet pour les envoyer à l'API*/
             formData.append("image", this.dataPost.image);
             formData.append("title", title);
             formData.append("userId", userId[0]);
+            /*Test de la bonne récupération de l'image => console.log("test", formData.get("image"));*/
 
+            /*On passe le formData dans la requête*/
             if(title != "") {
                 axios.post('http://localhost:3000/api/post', formData, { 
                     headers: {
@@ -335,12 +341,14 @@ name: 'multitopic',
             let userToken = userInLocalStorage.map(user => user.token);
 
             let userId = userInLocalStorage.map(user => user.userId);
-
+            /*Création d'un objet FormData pour envoyer l'image à l'API*/
             const formData = new FormData();
-            
+            /*Ajout de toutes clés et valeur à l'objet pour les envoyer à l'API*/
             formData.append("image", this.dataPost.image);
             formData.append("userIdOrder", userId[0]);
+            /*Test de la bonne récupération de l'image => console.log("test", formData.get("image"));*/
 
+            /*On passe le formData dans la requête*/
             axios.put(`http://localhost:3000/api/post/image/${postId}`, formData, {
                 headers: {
                     Authorization: "Bearer " + userToken

@@ -81,9 +81,10 @@ export default {
       let userToken = userInLocalStorage.map(user => user.token);
 
       let userId = userInLocalStorage.map(user => user.userId);
-
+      /*Toutes la dataEdit est copiée dans un objet*/
       const copy = Object.assign({}, this.dataEdit);
-
+      /*Grâce à cet objet on peut créer une boucle qui va supprimer toutes les valeurs "null"*/
+      /*On envoie ...copy dans la requête à l'API et ainsi seules les valeurs complétées sont envoyées à l'API*/
       for(const key in copy) {
         if (copy[key] == null) {
           delete copy[key]
@@ -156,12 +157,14 @@ export default {
       let userToken = userInLocalStorage.map(user => user.token);
 
       let userId = userInLocalStorage.map(user => user.userId);
-
+      /*Création d'un objet FormData pour envoyer l'image à l'API*/
       const formData = new FormData();
-
+      /*Ajout de toutes clés et valeur à l'objet pour les envoyer à l'API*/
       formData.append("image", this.dataEdit.image);
       formData.append("userIdOrder", userId[0]);
+      /*Test de la bonne récupération de l'image => console.log("test", formData.get("image"));*/
 
+      /*On passe le formData dans la requête*/
       axios.put(`http://localhost:3000/api/auth/image/${id}`, formData, {
         headers: {
           Authorization: "Bearer " + userToken

@@ -47,8 +47,8 @@ export default createStore({
         .then(response => { 
           this.commit('USER_INFOS', response.data)
         })
-        .catch(error => {
-          console.log(error)
+        .catch((error) => {
+          alert(error)
         });
       }
     },
@@ -68,8 +68,8 @@ export default createStore({
       .then(response => { 
         this.commit('TOPIC_INFOS', response.data) 
       })
-      .catch(error => { 
-        console.log(error)
+      .catch((error) => { 
+        alert(error)
       });
     },
     getAllComments() {
@@ -85,8 +85,8 @@ export default createStore({
       .then(response => { 
         this.commit('COMMENT_INFOS', response.data) 
       })
-      .catch(error => { 
-        console.log(error)
+      .catch((error) => { 
+        alert(error)
       });
     },
     getAllUsers() {
@@ -102,8 +102,8 @@ export default createStore({
       .then(response => { 
         this.commit('ALL_USERS_INFOS', response.data)
       })
-      .catch(error => { 
-        console.log(error)
+      .catch((error) => { 
+        alert(error)
       });
     },
     getAllPosts() {
@@ -119,8 +119,8 @@ export default createStore({
       .then(response => { 
         this.commit('POST_INFOS', response.data)
       })
-      .catch(error => { 
-        console.log(error)
+      .catch((error) => { 
+        alert(error)
       });
     },
   },

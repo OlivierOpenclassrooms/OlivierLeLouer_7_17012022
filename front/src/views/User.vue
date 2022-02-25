@@ -55,8 +55,11 @@ export default {
 
     formatDate(bddDate) {
       const date = new Date(bddDate);
+
       const day = date.toLocaleDateString();
+
       const time = date.toLocaleTimeString();
+      
       return `le ${day} à ${time}`
     },
   },
