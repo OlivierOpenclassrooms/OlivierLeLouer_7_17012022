@@ -10,26 +10,26 @@
             </form>
         </div>
         <div class="container__infos">
-            <div class="card-infos" v-for="item in topic" :key="item">
+            <div class="card-infos" v-for="i in topic" :key="i">
                 <div class="card-infos__title">
-                    <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="item.id">{{ item.title }}</p>
+                    <p class="card-infos__title__name button-get" @click="getOneTopic" :topicId="i.id">{{ i.title }}</p>
                 </div>
                 <div class="card-infos__title" v-for="user in allUsers" :key="user">
-                    <p class="card-infos__title__user" v-if="item.userId == user.id" @click="getOneUser" :userId="user.id">par {{ user.prenom }} {{ user.nom }}</p>
-                    <div class="user-picture" v-if="item.userId == user.id">
+                    <p class="card-infos__title__user" v-if="i.userId == user.id" @click="getOneUser" :userId="user.id">par {{ user.prenom }} {{ user.nom }}</p>
+                    <div class="user-picture" v-if="i.userId == user.id">
                         <img v-if="user.imageUrl != null" :src="user.imageUrl"/>
                     </div>
                 </div>
                 <div class="card-infos__title">
-                    <p class="card-infos__title__date">créé le {{ formatDate(item.createdAt) }}</p>
-                    <p class="card-infos__title__date" v-if="item.updatedAt != item.createdAt">Edité le {{ formatDate(item.updatedAt) }}</p>
+                    <p class="card-infos__title__date">créé le {{ formatDate(i.createdAt) }}</p>
+                    <p class="card-infos__title__date" v-if="i.updatedAt != i.createdAt">Edité le {{ formatDate(i.updatedAt) }}</p>
                 </div>
-                <div class="container-buttons" v-if="item.userId == user.id || user.isAdmin == true">
-                    <form class="form-modify" @submit.prevent="modifyComment" :commentId="item.id">
+                <div class="container-buttons" v-if="i.userId == user.id || user.isAdmin == true">
+                    <form class="form-modify" @submit.prevent="modifyComment" :commentId="i.id">
                         <input class="form-modify__description" type='text' name="commentaire" placeholder="Entrer modification"/>
                         <input type="submit" class="button-comment" value="Modifier"/>
                     </form>
-                    <button class='button-comment' @click="deleteComment" :commentId="item.id">Supprimer</button>
+                    <button class='button-comment' @click="deleteComment" :commentId="i.id">Supprimer</button>
                 </div>
             </div>
         </div>
@@ -88,6 +88,8 @@ export default {
         createTopic(event) {
             const title = event.target.elements.topic.value;
 
+            if(title != null) {
+
             axios.post('http://localhost:3000/api/topic', {
                 title: title,
                 userId: this.dataTopic.userId,
@@ -99,6 +101,7 @@ export default {
             })
             .then( response => { console.log(response), this.$store.dispatch('getAllTopics')})
             .catch(error => {console.log(error)})
+            }
         },
         deleteTopic(event) {
             let topicId = event.target.getAttribute("topicId");

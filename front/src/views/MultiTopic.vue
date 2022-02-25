@@ -11,6 +11,9 @@
             </form>
         </div>
         <div class="card" v-for="item in post" :key="item">
+
+        <!--PARTIE POST-->
+
             <div class="card-post">
                 <div v-for="allUsers in allUsers" :key="allUsers">
                     <div class="card-post__user" v-if="item.userId == allUsers.id">
@@ -24,10 +27,6 @@
                             </div>
                         </div>
                         <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
-                            <form class="form-modify" @submit.prevent="modifyPostDescription" :postId="item.id">
-                                <input class="form-modify__description" type='text' name="post" placeholder="Entrer modification"/>
-                                <input type="submit" class="button-comment" value="Modifier"/>
-                            </form>
                             <i class="fa-solid fa-trash-can" @click="deletePost" :postId="item.id"></i>
                         </div>
                     </div>
@@ -35,6 +34,12 @@
                 <div class="post">
                     <div class="post__description">
                         <p>{{ item.title }}</p>
+                        <div v-if="item.userId == user.id || user.isAdmin == true" class="container-buttons post-buttons">
+                            <form class="form-modify"  @submit.prevent="modifyPostDescription" :postId="item.id">
+                                <input class="form-modify__description" type='text' name="post" placeholder="Entrer modification"/>
+                                <input type="submit" class="button-comment" value="Modifier"/>
+                            </form>
+                        </div>
                     </div>
                     <div class="post__picture">
                         <img v-if="item.imageUrl != null" :src="item.imageUrl"/>
@@ -51,6 +56,9 @@
                     </form>
                 </div>
             </div>
+
+            <!--PARTIE COMMENTAIRES-->
+
             <div class="scroller">
                 <div class="container-comment" v-for="i in comment" :key="i">
                     <div v-if="item.id == i.postId">
@@ -89,6 +97,8 @@
 import axios from "axios";
 import { mapState } from 'vuex';
 
+let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
 export default {
 
 name: 'multitopic',
@@ -107,8 +117,6 @@ name: 'multitopic',
         }
     },
     mounted() {
-        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
         if (userInLocalStorage == null) {
             this.$router.push('/');
         } else {
@@ -187,8 +195,6 @@ name: 'multitopic',
 
         getOneUser(event) {
             let userId = event.target.getAttribute("userId");
-
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
 
             let userToken = userInLocalStorage.map(user => user.token);
 
@@ -371,6 +377,7 @@ name: 'multitopic',
     min-width: 100%;
     &__description {
         display: flex;
+        flex-direction: column;
         align-items: flex-start;
         padding-left: 2%;
     }
@@ -454,7 +461,6 @@ name: 'multitopic',
 }
 
 .container-buttons {
-    margin-top: 0;
     margin-bottom: 10px;
 }
 
@@ -473,5 +479,4 @@ name: 'multitopic',
         margin: 0;
     }
 }
-
 </style>

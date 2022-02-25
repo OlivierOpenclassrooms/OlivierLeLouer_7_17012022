@@ -7,7 +7,7 @@
                 <input type="email" v-model="dataLogin.email" placeholder="Email" required/>
                 <input type="password" v-model="dataLogin.password" placeholder="Mot de passe" required/>
             </div>
-            <div class= 'form' v-if='mode== "signUp"'>
+            <div class= 'form' v-if='mode=="signUp"'>
                 <input type="text" v-model="dataLogin.prenom" placeholder="Prénom" required />
                 <input type="text" v-model="dataLogin.nom" placeholder="Nom" required />
             </div>
@@ -16,17 +16,16 @@
             <p v-if="mode == 'signUp'">Déjà inscrit ? <span class= 'card__action' @click="switchToLogin">Se connecter</span></p>
             <p v-else>Pas encore inscrit ? <span class= 'card__action' @click="switchToSignUp">S'inscrire</span></p>
         </div>
-    <router-view/>
     </main>
 </template>
 
 <script>
 import axios from "axios";
 
+let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
+
 export default {
-
     name: "Login",
-
     data () {
         return {
             dataLogin: {
@@ -38,19 +37,13 @@ export default {
             mode: 'login'
         }
     },
-
     mounted() {
-        let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
         if (userInLocalStorage != null) {
             this.$router.push('/topic');
         }
     },
-    
+
     methods: {
-        reload() {
-            
-        },
         switchToSignUp() {
             this.mode ='signUp'
         },
@@ -58,8 +51,6 @@ export default {
             this.mode ='login'
         },
         saveUserInLocalStorage(response) {
-            let userInLocalStorage = JSON.parse(localStorage.getItem('user'));
-
             if (userInLocalStorage === null) {
                 userInLocalStorage = [];
                 userInLocalStorage.push(response);
@@ -80,9 +71,9 @@ export default {
                 this.saveUserInLocalStorage(response.data), 
                 this.$router.go() 
             })
-            .catch(
-                alert("Mauvais identifiant ou mot de passe") 
-            );
+            .catch(error => {
+                alert(`${error} => Ce n'est pas le bon mot de passe !`)
+            });
         },
         signUp() {
         /*- de 8 à 30 caractères
@@ -111,13 +102,13 @@ export default {
                         this.$router.push('Topic')
                     })
                     .catch(error => {
-                        alert(error)
+                        alert(`${error} => Cette adresse email existe déjà !`)
                     });
                 } else {
-                    alert('mauvais email')
+                    alert('Mauvaise adresse email')
                 }
             } else {
-                alert('mauvais mdp')
+                alert('Votre mot de mot de passe doit contenir au moins : une lettre minuscule, une lettre majuscule, un chiffre et un de ces caractères spéciaux: $ @ % * + - _ !')
             }
         }
     }
@@ -125,7 +116,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .card {
     background-color: rgb(226, 226, 226);
     width: 40%;
@@ -191,5 +181,4 @@ export default {
         width: 75%;
     }
 }
-
 </style>
