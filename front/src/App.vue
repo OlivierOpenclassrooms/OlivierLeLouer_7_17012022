@@ -88,6 +88,10 @@ input:focus {
   outline: none;
 }
 
+textarea:focus {
+  outline: none;
+}
+
 .container {
     display: flex;
     flex-direction: column;

@@ -84,7 +84,7 @@ export default {
       /*Toutes la dataEdit est copiée dans un objet*/
       const copy = Object.assign({}, this.dataEdit);
       /*Grâce à cet objet on peut créer une boucle qui va supprimer toutes les valeurs "null"*/
-      /*On envoie ...copy dans la requête à l'API et ainsi seules les valeurs complétées sont envoyées à l'API*/
+      /*On envoie "...copy" dans la requête à l'API et ainsi seules les valeurs complétées sont envoyées à l'API*/
       for(const key in copy) {
         if (copy[key] == null) {
           delete copy[key]
@@ -115,7 +115,14 @@ export default {
     },
     editUserPassword() {
       const id = this.$route.params.id;
-
+      /*le mot de passe doit contenir :
+        - de 8 à 30 caractères
+        - au moins une lettre minuscule
+        - au moins une lettre majuscule
+        - au moins un chiffre
+        - au moins un de ces caractères spéciaux: $ @ % * + - _ !
+        - aucun autre caractère possible: pas de & ni de {
+        */
       const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,30})$/;
 
       let userToken = userInLocalStorage.map(user => user.token);
@@ -143,7 +150,7 @@ export default {
           })
 
         } else {
-          alert('Votre mot de mot de passe doit contenir au moins : une lettre minuscule, une lettre majuscule, un chiffre et un de ces caractères spéciaux: $ @ % * + - _ !');
+          alert('Votre mot de mot de passe doit contenir au moins : une lettre minuscule, une lettre majuscule, un chiffre, un de ces caractères spéciaux: $ @ % * + - _ ! et 8 à 30 caractères');
         }
 
       } else {
