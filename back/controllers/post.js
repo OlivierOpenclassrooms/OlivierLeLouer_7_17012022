@@ -247,12 +247,12 @@ exports.deletePost = (req, res) => {
                             Post.destroy( { where: { id: id } } )
                                 .then(() => {
                                     Comment.destroy( { where: { postId: id } } )
-                                    .then(() => {
-                                        res.status(200).json({ message: 'Post et commentaires supprimés en tant qu\'administrateur !'})
-                                    })
-                                    .catch((error) => {
-                                        res.status(400).json({ error })
-                                    });
+                                        .then(() => {
+                                            res.status(200).json({ message: 'Post et commentaires supprimés en tant qu\'administrateur !'})
+                                        })
+                                        .catch((error) => {
+                                            res.status(400).json({ error })
+                                        });
                                 })
                                 .catch((error) => {
                                     res.status(400).json({ error })
