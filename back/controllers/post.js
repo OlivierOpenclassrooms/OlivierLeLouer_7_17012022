@@ -246,14 +246,13 @@ exports.deletePost = (req, res) => {
                         fs.unlink(`images/${filename}`, () => {
                             Post.destroy( { where: { id: id } } )
                                 .then(() => {
-                                    res.status(200).json({ message: 'Post supprimé en tant qu\'administrateur !'})
-                                })
-                                .catch((error) => {
-                                    res.status(400).json({ error })
-                                });
-                            Comment.destroy( { where: { postId: id } } )
-                                .then(() => {
-                                    res.status(200).json({ message: 'Commentaires supprimé!'})
+                                    Comment.destroy( { where: { postId: id } } )
+                                    .then(() => {
+                                        res.status(200).json({ message: 'Post et commentaires supprimés en tant qu\'administrateur !'})
+                                    })
+                                    .catch((error) => {
+                                        res.status(400).json({ error })
+                                    });
                                 })
                                 .catch((error) => {
                                     res.status(400).json({ error })
@@ -273,14 +272,13 @@ exports.deletePost = (req, res) => {
                             fs.unlink(`images/${filename}`, () => {
                                 Post.destroy( { where: { id: id } } )
                                     .then(() => {
-                                        res.status(200).json({ message: 'Post supprimé!'})
-                                    })
-                                    .catch((error) => {
-                                        res.status(400).json({ error })
-                                    });
-                                Comment.destroy( { where: { postId: id } } )
-                                    .then(() => {
-                                        res.status(200).json({ message: 'Commentaires supprimé!'})
+                                        Comment.destroy( { where: { postId: id } } )
+                                            .then(() => {
+                                                res.status(200).json({ message: 'Post et Commentaires supprimés !'})
+                                            })
+                                            .catch((error) => {
+                                                res.status(400).json({ error })
+                                            });
                                     })
                                     .catch((error) => {
                                         res.status(400).json({ error })

@@ -122,36 +122,36 @@ exports.deleteTopic = (req, res) => {
             if(user.isAdmin == true && user.id == userId) {
                 Topic.destroy( { where: { id: id } } )
                     .then(() => {
-                        res.status(200).json({ message: 'Topic supprimé en tant qu\'administrateur !'})
+                        Comment.destroy( { where: { topicId: id } } )
+                            .then(() => {
+                                res.status(200).json({ message: 'Topic et commentaires supprimés en tant qu\'administrateur !'})
+                            })
+                            .catch((error) => {
+                                res.status(400).json({ error })
+                            });
                     })
                     .catch((error) => {
                         res.status(400).json({ error })
                     });
-                Comment.destroy( { where: { topicId: id } } )
-                    .then(() => {
-                        res.status(200).json({ message: 'Commentaires supprimés!'})
-                    })
-                    .catch((error) => {
-                        res.status(400).json({ error })
-                    });
+                
             } else { 
                 Topic.findByPk(id)
                     .then(topic => {
                         if (topic.userId == userId) {
                             Topic.destroy( { where: { id: id } } )
                                 .then(() => {
-                                    res.status(200).json({ message: 'Topic supprimé!'})
+                                    Comment.destroy( { where: { topicId: id } } )
+                                        .then(() => {
+                                            res.status(200).json({ message: 'Topic et Commentaires supprimés!'})
+                                        })
+                                        .catch((error) => {
+                                            res.status(400).json({ error })
+                                        });
                                 })
                                 .catch((error) => {
                                     res.status(400).json({ error })
                                 });
-                            Comment.destroy( { where: { topicId: id } } )
-                                .then(() => {
-                                    res.status(200).json({ message: 'Commentaires supprimés!'})
-                                })
-                                .catch((error) => {
-                                    res.status(400).json({ error })
-                                });
+                            
                         } else {
                             res.status(401).json({ message: 'Opération non autorisée' })
                         }
