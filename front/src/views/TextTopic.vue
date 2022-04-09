@@ -143,7 +143,7 @@ export default {
 
             for(const key in copy) {
                 if (copy[key] == null) {
-                delete copy[key]
+                    delete copy[key]
                 }
             }
             let topicId = event.target.getAttribute("topicId");
